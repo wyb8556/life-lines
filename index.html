@@ -54,14 +54,19 @@ p { text-wrap: pretty; }
 
 /* ---------- 背景：颠倒的城市 ---------- */
 .scene { position: fixed; inset: 0; z-index: var(--z-canvas); overflow: hidden; pointer-events: none; }
-#city { position: absolute; inset: -12px; width: calc(100% + 24px); height: calc(100% + 24px); animation: drift 14s ease-in-out infinite alternate; }
+#city { position: absolute; inset: -12px; animation: drift 14s ease-in-out infinite alternate; }
+#city i { position: absolute; inset: 0; }
+.city-sky { background: linear-gradient(to bottom, #2a1030 0%, #e8607a 46%, #e2609a 62%, #b356c4 82%, #6c4ad0 100%); }
+/* 照片已预先上下翻转：楼顶朝下，天空在下方。底部渐隐接上天空渐变 */
+.city-photo { bottom: 38% !important; background: url(city.jpg) 42% 100% / cover no-repeat; -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent); mask-image: linear-gradient(to bottom, #000 70%, transparent); }
+.city-grade { background: linear-gradient(to bottom, #3b1446 0%, #ff6f8e 55%, #8a5cff 100%); mix-blend-mode: soft-light; opacity: 0.9; }
 @keyframes drift { to { transform: translate3d(-6px, 8px, 0) scale(1.015); } }
 #vortex { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transform: scale(1.5) rotate(-12deg); transition: opacity 0.9s var(--ease), transform 1.6s var(--ease); }
 body:not([data-screen="intro"]) #vortex { opacity: 1; transform: none; }
 body:not([data-screen="intro"]) #city { opacity: 0; }
 #city { transition: opacity 0.6s; }
 .faller {
-  position: absolute; left: calc(50% + 46px); top: 32%;
+  position: absolute; left: 22%; top: 39%;
   width: 28px; height: auto;
   transform-origin: 50% 30%;
   animation: float 6s ease-in-out infinite alternate;
@@ -169,6 +174,7 @@ body.warping .flash { animation: flash 1.6s linear both; }
   transition: transform 0.2s var(--ease), opacity 0.2s;
 }
 .cta:active { transform: scale(0.98); }
+.credit { margin-top: 6px; font-size: 10px; color: var(--muted); opacity: 0.6; text-align: center; }
 .fine { margin-top: 12px; font-size: 12px; color: var(--muted); text-align: center; }
 
 /* ---------- 答题 ---------- */
@@ -414,7 +420,7 @@ body.warping .flash { animation: flash 1.6s linear both; }
 </head>
 <body data-screen="intro">
 <div class="scene" aria-hidden="true">
-  <canvas id="city"></canvas>
+  <div id="city"><i class="city-sky"></i><i class="city-photo"></i><i class="city-grade"></i></div>
   <canvas id="vortex"></canvas>
   <svg class="faller" viewBox="0 0 60 124" fill="none" stroke="#1a0a1f" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="30" cy="12" r="8.5" fill="#1a0a1f" stroke="none"/>
@@ -443,6 +449,7 @@ body.warping .flash { animation: flash 1.6s linear both; }
         </ul>
         <button class="cta" id="start">跳进平行宇宙</button>
         <p class="fine">约 6 分钟 · 凭第一直觉选 · 答案只保存在你的手机里</p>
+        <p class="credit">背景照片：Emiliano Bar / Unsplash</p>
       </div>
     </div>
   </section>
@@ -820,112 +827,6 @@ const lines = (() => {
   document.addEventListener('visibilitychange', () => { if (!document.hidden) start(); });
   size(); start();
   return { set(m) { mode = m; modeAt = performance.now(); start(); } };
-})();
-
-/* ============ 颠倒的城市（原创绘制，不用任何外部图片） ============ */
-const city = (() => {
-  const cv = $('#city');
-  const ctx = cv.getContext('2d');
-
-  function sky(w, h) {
-    const g = ctx.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0, '#1d0b24');
-    g.addColorStop(0.3, '#4a1840');
-    g.addColorStop(0.38, '#f06478');
-    g.addColorStop(0.6, '#ec6a8a');
-    g.addColorStop(0.8, '#c357b0');
-    g.addColorStop(1, '#7448c9');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w, h);
-    const glow = (x, y, r, c) => {
-      const rg = ctx.createRadialGradient(x, y, 0, x, y, r);
-      rg.addColorStop(0, c); rg.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = rg; ctx.fillRect(0, 0, w, h);
-    };
-    glow(w * 0.25, h * 0.4, w * 0.9, 'rgba(255,150,110,0.45)');
-    glow(w * 0.95, h * 0.95, w * 0.9, 'rgba(110,70,220,0.55)');
-  }
-
-  function clouds(w, h, rnd) {
-    for (let i = 0; i < 22; i++) {
-      const x = rnd() * w, y = h * (0.52 + rnd() * 0.45), r = w * (0.15 + rnd() * 0.3);
-      ctx.save();
-      ctx.translate(x, y); ctx.scale(1, 0.28);
-      const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
-      const a = 0.05 + rnd() * 0.12;
-      rg.addColorStop(0, `rgba(255,${200 + Math.floor(rnd() * 40)},230,${a})`);
-      rg.addColorStop(1, 'rgba(255,220,240,0)');
-      ctx.fillStyle = rg;
-      ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
-      ctx.restore();
-    }
-  }
-
-  // 一层楼：从屏幕顶部往下“挂”，楼顶朝下
-  function layer(w, h, rnd, o) {
-    let x = -rnd() * 30;
-    while (x < w) {
-      const bw = o.minW + rnd() * (o.maxW - o.minW);
-      const edge = Math.abs(x + bw / 2 - w / 2) / (w / 2); // 0 中间 → 1 边缘
-      const depth = h * (o.minD + rnd() * (o.maxD - o.minD) + edge * o.edgeBoost);
-      const g = ctx.createLinearGradient(0, 0, 0, depth);
-      g.addColorStop(0, o.top); g.addColorStop(1, o.end);
-      ctx.fillStyle = g;
-      ctx.fillRect(x, 0, bw, depth);
-      // 楼顶：退台 + 天线 / 尖塔
-      const r = rnd();
-      if (r < 0.35) {
-        const iw = bw * (0.45 + rnd() * 0.3), ih = 6 + rnd() * 18;
-        ctx.fillStyle = o.end;
-        ctx.fillRect(x + (bw - iw) / 2, depth - 1, iw, ih);
-        if (rnd() < 0.5) ctx.fillRect(x + bw / 2 - 1, depth + ih - 1, 2, 10 + rnd() * 30);
-      } else if (r < 0.42 && o.spire) {
-        ctx.fillStyle = o.end;
-        ctx.beginPath();
-        ctx.moveTo(x + bw * 0.2, depth - 1); ctx.lineTo(x + bw * 0.8, depth - 1);
-        ctx.lineTo(x + bw * 0.5, depth + bw * 1.6); ctx.closePath(); ctx.fill();
-        ctx.fillRect(x + bw / 2 - 1, depth + bw * 1.5, 2, 26);
-      }
-      // 楼顶边缘被天光照亮
-      ctx.fillStyle = o.rim;
-      ctx.fillRect(x, depth - 2, bw, 2);
-      // 窗户
-      const cw = o.win, gap = o.win * 2 + 3;
-      for (let wy = 6; wy < depth - 8; wy += gap + 2) {
-        for (let wx = x + 3; wx < x + bw - cw - 2; wx += gap) {
-          if (rnd() < o.lit) {
-            ctx.fillStyle = rnd() < 0.7 ? `rgba(255,205,160,${o.winA})` : `rgba(255,140,190,${o.winA})`;
-            ctx.fillRect(wx, wy, cw, cw + 1);
-          }
-        }
-      }
-      x += bw + (rnd() < 0.3 ? rnd() * 4 : 0);
-    }
-  }
-
-  function draw() {
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    const w = cv.clientWidth, h = cv.clientHeight;
-    cv.width = w * dpr; cv.height = h * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const rnd = mulberry32(318);
-    sky(w, h);
-    clouds(w, h, rnd);
-    // 远 → 近：越远越淡、越被天光染粉
-    layer(w, h, rnd, { minW: 10, maxW: 26, minD: 0.24, maxD: 0.34, edgeBoost: 0, top: '#3a1638', end: '#a44a6e', rim: 'rgba(255,170,150,0.5)', win: 1.5, lit: 0.25, winA: 0.4, spire: true });
-    layer(w, h, rnd, { minW: 18, maxW: 40, minD: 0.15, maxD: 0.28, edgeBoost: 0.04, top: '#24102a', end: '#5c2448', rim: 'rgba(255,150,140,0.45)', win: 2, lit: 0.22, winA: 0.5, spire: true });
-    layer(w, h, rnd, { minW: 34, maxW: 70, minD: 0.04, maxD: 0.1, edgeBoost: 0.22, top: '#12060f', end: '#2a0f26', rim: 'rgba(255,130,140,0.35)', win: 2, lit: 0.16, winA: 0.45, spire: false });
-    // 楼与天空交界的雾
-    const haze = ctx.createLinearGradient(0, h * 0.18, 0, h * 0.4);
-    haze.addColorStop(0, 'rgba(240,100,120,0)');
-    haze.addColorStop(1, 'rgba(240,100,120,0.28)');
-    ctx.fillStyle = haze;
-    ctx.fillRect(0, h * 0.18, w, h * 0.22);
-  }
-  let t;
-  addEventListener('resize', () => { clearTimeout(t); t = setTimeout(draw, 150); });
-  draw();
-  return { draw };
 })();
 
 /* ============ 星轨漩涡：进入宇宙之后的世界（原创绘制） ============ */
