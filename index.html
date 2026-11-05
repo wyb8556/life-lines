@@ -393,6 +393,14 @@ body.flip-in .scene, body.flip-in #quiz .wrap { animation: flip-in 0.55s var(--e
 .jobs span { display: block; margin-top: 4px; padding-left: 1.6em; color: var(--muted); font-size: 15px; }
 
 .lifeline { margin-top: 26px; }
+.lifeline h3 .odds { margin-left: auto; font-family: var(--serif); font-size: 18px; color: var(--accent); font-variant-numeric: tabular-nums; }
+.lifeline h3 .top { flex: none; padding: 1px 8px; border-radius: 999px; background: var(--accent); color: var(--bg); font-size: 11px; font-weight: 700; }
+.odds-note { margin-top: 20px; font-size: 12px; color: var(--muted); }
+.fork { margin-top: 20px; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--accent); background: var(--accent-soft); }
+.fork span { font-size: 12px; font-weight: 700; color: var(--accent); }
+.fork p { margin-top: 6px; font-size: 15px; }
+.fork b { color: var(--ink); }
+.sec .mask { margin-top: 22px; }
 .lifeline h3 { font-size: 16px; display: flex; align-items: center; gap: 10px; }
 .lifeline h3 i { width: 18px; height: 2px; border-radius: 2px; flex: none; }
 .lifeline h3 em { font-style: normal; font-weight: 400; color: var(--muted); font-size: 13px; }
@@ -758,38 +766,115 @@ const WORK_FT = {
   T: '你需要一份能看到成长和结果的工作。原地打转，会让你焦躁。',
 };
 
+/* 职业的深度部分：天赋 / 最容易踩的坑 / 人生岔路口 / 按 T、F 分开的 3 个工作方向 */
+const CAREER_X = {
+  OEC: {
+    talents: ['把模糊的想法变成能落地的方案', '在混乱里第一个站出来拍板'],
+    pitfall: '什么都想自己来，最后把自己累垮。你要学的不是更努力，而是放手。',
+    fork: '要不要离开稳定的平台，去做一件只属于自己的事',
+    T: [['产品经理', '想法多又能落地，你最受不了“只是想想”'], ['创业 / 合伙人', '你不太适合长期执行别人的想法'], ['战略 / 咨询', '你擅长从一团乱麻里找到方向']],
+    F: [['品牌主理人', '你能把一个想法做成一个有温度的牌子'], ['社会创新 / 公益项目', '你想做的事，最好还能让别人变好'], ['教育 / 内容创业', '你擅长点燃别人，也擅长把事做成']],
+  },
+  OEc: {
+    talents: ['让一个场子瞬间活起来', '把普通的事讲得很好听'],
+    pitfall: '三分钟热度。开头总是最快的那个，坚持到最后的却不一定是你。',
+    fork: '要不要把一直在做的爱好，认真变成一份收入',
+    T: [['新媒体运营 / 增长', '你知道什么东西会火'], ['广告创意', '脑洞多，而且不怕被否定'], ['销售 / BD', '你能把任何东西卖出去']],
+    F: [['博主 / 主播', '你的表达欲本身就是生产力'], ['活动策划 / 主持', '你天生知道怎么让人开心'], ['演员 / 表演相关', '你的情绪能感染别人']],
+  },
+  OeC: {
+    talents: ['在一个问题上钻得比所有人都深', '看到别人看不到的结构和规律'],
+    pitfall: '太追求完美，作品总差最后一点，不敢拿出来。',
+    fork: '要不要往更难、更专业的方向再走一步',
+    T: [['工程师 / 程序员', '你享受把复杂的东西做对'], ['数据分析 / 研究员', '你喜欢从数字里找真相'], ['建筑 / 工业设计', '审美和逻辑你两样都有']],
+    F: [['UI / 交互设计', '你懂用户的感受，也懂结构'], ['心理咨询 / 研究', '你对人心的好奇，比对机器更大'], ['编辑 / 出版', '你能把别人的想法打磨成好作品']],
+  },
+  Oec: {
+    talents: ['对“有意思”的东西嗅觉很准', '把感受变成作品'],
+    pitfall: '想做的太多，选择困难，常常在“再等等”里错过时机。',
+    fork: '要不要离开熟悉的城市，去一个完全陌生的地方生活',
+    T: [['自由职业 / 远程技术岗', '你需要自由，也有手艺'], ['摄影 / 视频创作', '你用镜头记录世界'], ['旅行 / 户外相关', '固定的格子间会慢慢磨掉你']],
+    F: [['插画 / 写作', '你的敏感是一种天赋'], ['策展 / 文化行业', '你能把零散的美串成一个故事'], ['疗愈 / 艺术治疗', '你知道怎么陪别人一起感受']],
+  },
+  oEC: {
+    talents: ['把一群人拧成一股绳', '在压力下做决定'],
+    pitfall: '习惯掌控一切，有时候会忘了身边的人也需要被听见。',
+    fork: '要不要接下那个更大的位置，和随之而来的更大压力',
+    T: [['管理岗 / 团队负责人', '你能把目标拆成每个人的动作'], ['金融 / 投资', '你冷静，敢下判断'], ['销售管理', '目标感强，越难越来劲']],
+    F: [['HR / 组织发展', '你看人准，也懂怎么让人发挥出来'], ['学校 / 培训管理', '你会带人，也愿意带人'], ['医院 / 公共服务管理', '你想让一件重要的事稳稳运转']],
+  },
+  oEc: {
+    talents: ['让陌生人很快放下戒备', '记得住每个人的名字和喜好'],
+    pitfall: '太在乎关系，容易为了不得罪人而委屈自己。',
+    fork: '要不要靠自己的人脉，做一门属于自己的小生意',
+    T: [['商务拓展 / 渠道', '你的人缘就是你的业绩'], ['房产 / 保险顾问', '你能让人信任你'], ['活动执行 / 会展', '场面越大你越稳']],
+    F: [['社群运营', '你能把一群陌生人变成朋友'], ['导游 / 空乘 / 酒店', '你让每个人都觉得被照顾'], ['客户关系 / 售后', '你天生会安抚情绪']],
+  },
+  oeC: {
+    talents: ['把细节做到零失误', '让身边的人安心'],
+    pitfall: '太求稳，错过了一些本可以试试的机会。',
+    fork: '要不要离开舒适区，去试一次没有把握的事',
+    T: [['财务 / 会计 / 审计', '细心和耐心是你的护城河'], ['法务 / 合规', '规则在你手里是武器'], ['工程 / 质检', '你就是那个不放过任何错误的人']],
+    F: [['医护 / 药学', '你可靠，又有耐心'], ['教师', '你愿意一遍又一遍地讲，直到对方听懂'], ['体制内 / 公共服务', '你想要稳定，也想要意义']],
+  },
+  oec: {
+    talents: ['把日子过出质感', '让身边的人放松下来'],
+    pitfall: '容易满足于“差不多”，等到想改变的时候，发现已经习惯了。',
+    fork: '要不要把一个爱好，认真做成自己的小事业',
+    T: [['手艺人 / 工匠', '你享受亲手把东西做好'], ['弹性 / 远程工作', '你的节奏，不该被打卡机决定'], ['电商 / 小店经营', '小而美的事，你能做到极致']],
+    F: [['烘焙 / 咖啡 / 花艺', '你做的东西有温度'], ['宠物 / 园艺相关', '你身上有一种让人放松的气场'], ['美容 / 造型', '你懂得让别人变得更好看、更开心']],
+  },
+};
+
+/* 让你发光 / 枯萎的环境：社交能量 × 计划性 */
+const WORKPLACE = {
+  EJ: ['目标清晰、节奏快、有一群人一起冲的地方', '没人拍板、天天开会却没有结论的地方'],
+  EP: ['变化多、能见很多人、允许你试错的地方', '每天重复、一切都要按流程走的地方'],
+  IJ: ['安静、分工明确、能专心把事做好的地方', '天天被打断、到处救火的地方'],
+  IP: ['自由度高、看结果不看打卡的地方', '格子间、层层汇报、需要一直社交的地方'],
+};
+
+/* 你和钱的关系：想象力 × 计划性 */
+const MONEY = {
+  NJ: '你花钱有计划，但会为了“未来的自己”大方投资：一门课、一个好工具、一次重要的旅行。你相信钱应该花在能让自己变好的地方。',
+  NP: '你的钱常常花在体验上：说走就走的旅行、突然想学的东西。存钱对你来说，是一门需要刻意练习的课。',
+  SJ: '你是朋友里最会攒钱的那个。记账、比价、存款，你的安全感有一部分来自余额。只是偶尔，也可以对自己大方一点。',
+  SP: '你相信“钱就是用来让生活更好的”，该花就花，但关键时刻你也总能拿得出来。',
+};
+
+/* 感情线第一个节点，按恋爱经历改写 */
+const LOVE_FIRST = {
+  prologue: '第一段认真的感情，比你想象中来得更自然',
+  deep: '你终于真正放下了那段很长的感情',
+  rough: '你带着所有经验，遇见一个刚刚好的人',
+  spark: '你遇到一个让你第一次不想逃的人',
+  trial: '开始一段比上一次更认真的感情',
+};
+
 /* 职业人格：探索欲(N) × 社交能量(E) × 秩序感(J) */
 const CAREER = {
   OEC: { name: '开拓者', slogan: '你想做的事，总要亲手把它做出来。',
-    jobs: [['产品经理', '想法多又能落地，你最受不了“只是想想”'], ['创业 / 合伙人', '你不太适合长期执行别人的想法'], ['品牌策划', '会讲故事，也盯得住细节']],
     main: [[3, '成为团队里“有事就找你”的人'], [7, '带着一个从零做起的项目走到台前'], [12, '拥有一份写着自己名字的事业']],
     brave: [[2, '辞职去做那个一直躺在备忘录里的点子'], [5, '第一次失败，但比想象中站起来得更快'], [10, '在另一座城市重新开始，而且干得不错']] },
   OEc: { name: '点火者', slogan: '你走到哪，哪里就热闹起来。',
-    jobs: [['自媒体 / 博主', '你的表达欲本身就是生产力'], ['活动策划 / 主持', '你天生知道怎么让一个场子活起来'], ['创意广告', '脑洞多，而且不怕被否定']],
     main: [[2, '一条随手发的内容突然火了'], [6, '把爱好变成了真金白银的收入'], [11, '身边永远有一群愿意陪你瞎折腾的人']],
     brave: [[1, '认认真真把一个账号更新满一年'], [4, '跨进一个完全陌生的行业'], [9, '成为某个圈子里叫得出名字的人']] },
   OeC: { name: '建筑师', slogan: '你很安静，但脑子里在盖楼。',
-    jobs: [['设计师（UI / 建筑 / 产品）', '审美和逻辑你两样都有'], ['研究员 / 工程师', '你能在一个问题上钻得比别人都深'], ['数据分析', '你喜欢从一团乱麻里找出规律']],
     main: [[3, '在一个领域里被认可为“真懂的人”'], [7, '做出一件让你骄傲很多年的作品'], [12, '拥有了随时说“不”的底气']],
     brave: [[2, '读研，或者转向一个更难的方向'], [5, '把作品公开，被很多人看见'], [10, '有人因为你的作品改变了做事的方式']] },
   Oec: { name: '漫游者', slogan: '你不是迷路，你是在收集风景。',
-    jobs: [['插画 / 写作 / 摄影', '你的敏感是一种天赋'], ['自由职业 / 远程工作', '固定的格子间会慢慢磨掉你'], ['文化 / 策展 / 内容行业', '你对“有意思”的东西嗅觉很准']],
     main: [[2, '换过几份工作，终于知道了自己不要什么'], [6, '找到一种不用朝九晚五也能活得很好的方式'], [11, '住在一个你自己选的地方']],
     brave: [[1, '一个人出发，去一个很远的地方'], [4, '出版或展出你的第一份作品'], [9, '活成了别人口中那种“真自由”的人']] },
   oEC: { name: '指挥官', slogan: '你天生知道事情该怎么推进。',
-    jobs: [['管理岗 / 团队负责人', '你能把一群人拧成一股绳'], ['销售管理 / 商务', '目标感强，越难越来劲'], ['HR / 组织发展', '你看人准，也懂怎么让人发挥出来']],
     main: [[3, '第一次带团队'], [7, '成为能拍板的那个人'], [12, '经济上不再为钱焦虑']],
     brave: [[2, '跳去一个更大的平台'], [5, '接下一个没人敢接的烂摊子，并且搞定了'], [10, '开始投资自己，或者别人的事业']] },
   oEc: { name: '连接者', slogan: '你是人群里的那根线。',
-    jobs: [['销售 / 商务拓展', '你的人缘就是你的业绩'], ['客户关系 / 导游 / 空乘', '你能让陌生人很快放下戒备'], ['社群运营', '你记得住每个人的名字和喜好']],
     main: [[2, '认识了一个改变你方向的人'], [6, '靠人脉做成了一件大事'], [11, '朋友遍布好几座城市']],
     brave: [[1, '去一线城市或者国外闯一闯'], [4, '自己做一门小生意'], [9, '成为别人口中“有事找ta准没错”的人']] },
   oeC: { name: '守护者', slogan: '有你在，一切都稳稳的。',
-    jobs: [['财务 / 会计 / 审计', '细心和耐心是你的护城河'], ['医护 / 药学', '你可靠，让人安心'], ['法务 / 体制内岗位', '规则在你手里不是束缚，是武器']],
     main: [[3, '考下一张关键的证书'], [7, '在一个靠谱的地方扎下根'], [12, '拥有一个真正属于自己的家']],
     brave: [[2, '试了一个跟专业完全无关的副业'], [5, '发现自己其实很会带人'], [10, '成了家里最有底气的那个人']] },
   oec: { name: '生活家', slogan: '你比谁都懂怎么好好过日子。',
-    jobs: [['手作 / 烘焙 / 咖啡', '小而美的事，你能做到极致'], ['弹性 / 远程工作', '你的节奏，不该被打卡机决定'], ['宠物 / 园艺 / 疗愈相关', '你身上有一种让人放松的气场']],
     main: [[2, '找到一份不用勉强自己的工作'], [6, '拥有一个完全按自己喜好布置的小窝'], [11, '过上了很多人羡慕的慢生活']],
     brave: [[1, '把爱好拿出来，卖出了第一单'], [4, '开了一家自己的小店'], [9, '小店有了常客，他们都叫得出你的名字']] },
 };
@@ -1448,6 +1533,27 @@ function lifeChart(R) {
 /* ============ 结果页 ============ */
 const LOCK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 
+// 三条线的发生概率，由各维度分数决定
+function lineOdds(R) {
+  const n = R.s.N / MAX.N, j = R.s.J / MAX.J, v = R.s.V / MAX.V, a = R.s.A / MAX.A, e = R.s.E / MAX.E;
+  return {
+    main: Math.round(46 + j * 32 + (1 - n) * 8),
+    brave: Math.round(22 + n * 28 + e * 10 + (1 - j) * 8),
+    love: Math.round(30 + (1 - v) * 38 + (1 - Math.abs(a - 0.45)) * 12),
+  };
+}
+
+// 按个人倾向微调节点年龄：想象力高的人更早出发，计划性低的人主线稍晚
+function personalLines(R, J, T) {
+  const n = R.s.N / MAX.N, j = R.s.J / MAX.J;
+  const love = T.love.map(([off, txt], i) => [off, i === 0 ? LOVE_FIRST[R.hist] : txt]);
+  return {
+    main: J.main.map(([off, txt]) => [off + (j < 0.35 ? 1 : 0), txt]),
+    brave: J.brave.map(([off, txt]) => [Math.max(1, off - (n > 0.7 ? 1 : 0)), txt]),
+    love,
+  };
+}
+
 function nodesList(items, age) {
   return `<ul class="nodes">${items.map(([off, txt]) => `<li><span class="age">${age + off}岁</span><span>${txt}</span></li>`).join('')}</ul>`;
 }
@@ -1456,6 +1562,12 @@ function renderResult() {
   const R = compute(state.answers);
   const T = ATTACH[R.attach];
   const J = CAREER[R.career];
+  const X = CAREER_X[R.career];
+  const L = personalLines(R, J, T);
+  const odds = lineOdds(R);
+  const top = Object.keys(odds).reduce((x, y) => (odds[y] > odds[x] ? y : x));
+  const badge = (k) => (k === top ? '<small class="top">最可能</small>' : '');
+  const [shine, drain] = WORKPLACE[R.type[0] + R.type[3]];
   const [histName, histText] = HISTORY[R.hist];
   const [t16Name, t16Line] = TYPE16[R.type];
   const mt = matchType(R.type);
@@ -1509,23 +1621,39 @@ function renderResult() {
       ${loveChart(R)}
       <p class="hist-name">过去：<span>${histName}</span></p>
       <p class="r-desc" style="margin-top:6px">${histText}</p>
-      ${nodesList(T.love, R.age)}
+      ${nodesList(L.love, R.age)}
     </section>
 
     <section class="sec">
       <h2 class="sec-title">你是「${J.name}」，适合这样的工作</h2>
       <p class="sec-lead">${J.slogan}</p>
-      <ol class="jobs">${J.jobs.map(([j, r]) => `<li><b>${j}</b><span>${r}</span></li>`).join('')}</ol>
+      <h3 class="sub-title">你的工作天赋</h3>
+      <div class="tags">${X.talents.map((t) => `<span>${t}</span>`).join('')}</div>
+      <h3 class="sub-title">最适合你的 3 个方向</h3>
+      <ol class="jobs">${X[R.type[2]].map(([j, r]) => `<li><b>${j}</b><span>${r}</span></li>`).join('')}</ol>
       <p class="tip">${WORK_FT[R.type[2]]}</p>
+      <div class="mask">
+        <div><span>让你发光的地方</span><p>${shine}</p></div>
+        <div><span>让你枯萎的地方</span><p>${drain}</p></div>
+      </div>
+      <h3 class="sub-title">你和钱的关系</h3>
+      <p class="r-desc">${MONEY[R.type[1] + R.type[3]]}</p>
+      <h3 class="sub-title">你最容易踩的坑</h3>
+      <p class="r-desc">${X.pitfall}</p>
     </section>
 
     <section class="sec">
       <h2 class="sec-title">平行宇宙里的三条人生线</h2>
       <p class="sec-lead">在 1000 万种可能里，离你最近的三条。</p>
+      <div class="fork">
+        <span>岔路口 · ${R.age + 2} 岁前后</span>
+        <p>你会面对一个选择：<b>${X.fork}</b>。你怎么选，决定了你会走上哪一条线。</p>
+      </div>
       ${lifeChart(R)}
-      <div class="lifeline"><h3><i style="background:var(--ink)"></i>主线<em>你最可能走的那条</em></h3>${nodesList(J.main, R.age)}</div>
-      <div class="lifeline"><h3><i style="background:var(--primary)"></i>支线<em>如果你再勇敢一点</em></h3>${nodesList(J.brave, R.age)}</div>
-      <div class="lifeline"><h3><i style="background:var(--accent)"></i>感情线<em>如果你遇见对的人</em></h3>${nodesList(T.love, R.age)}</div>
+      <div class="lifeline"><h3><i style="background:var(--ink)"></i>主线<em>按现在的节奏走下去</em>${badge('main')}<b class="odds">${odds.main}%</b></h3>${nodesList(L.main, R.age)}</div>
+      <div class="lifeline"><h3><i style="background:var(--primary)"></i>支线<em>如果你选了更勇敢的那条</em>${badge('brave')}<b class="odds">${odds.brave}%</b></h3>${nodesList(L.brave, R.age)}</div>
+      <div class="lifeline"><h3><i style="background:var(--accent)"></i>感情线<em>如果你遇见对的人</em>${badge('love')}<b class="odds">${odds.love}%</b></h3>${nodesList(L.love, R.age)}</div>
+      <p class="odds-note">百分比是这条线在你的宇宙里出现的概率，由你的 50 个回答推算。</p>
     </section>
 
     <p class="share-hint">截图晒出你的宇宙编号<span>看看朋友来自哪个宇宙，你们的线会不会交汇</span></p>`;
@@ -1533,7 +1661,7 @@ function renderResult() {
   const locked = `
     <section class="locked">
       <ul class="locked-list">
-        ${[`深度画像：别人眼里的你 vs 真实的你`, '你的选择出卖了你：3 个最能代表你的回答', '你可能没意识到的 5 件事', `最适合你的恋人类型（和 ${mt} 最合拍）`, '你的爱情线（过去 + 未来走势）', `你是「${J.name}」：适合的 3 个工作方向`, '平行宇宙里的三条人生线'].map((t) => `
+        ${[`深度画像：别人眼里的你 vs 真实的你`, '你的选择出卖了你：3 个最能代表你的回答', '你可能没意识到的 5 件事', `最适合你的恋人类型（和 ${mt} 最合拍）`, '你的爱情线（过去 + 未来走势）', `你是「${J.name}」：工作天赋、3 个方向、你和钱的关系`, '人生岔路口 + 三条人生线（含发生概率）'].map((t) => `
           <li><h3>${LOCK}${t}</h3><div class="ghost"><span style="width:92%"></span><span style="width:78%"></span><span style="width:60%"></span></div></li>`).join('')}
       </ul>
       <div class="paywall">
