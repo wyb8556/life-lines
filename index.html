@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1a2e">
+<title>1000万种人生里，你走的是哪一条线</title>
+<meta name="description" content="23个问题，展开属于你的平行宇宙：恋爱人格、爱情线、适合的工作、三条人生线。仅供娱乐。">
+<style>
+:root {
+  --bg: oklch(0.17 0.045 240);
+  --surface: oklch(0.215 0.05 238);
+  --line: oklch(0.34 0.05 236);
+  --ink: oklch(0.96 0.01 230);
+  --muted: oklch(0.77 0.035 232);
+  --primary: oklch(0.74 0.11 230);
+  --accent: oklch(0.77 0.14 28);
+  --accent-soft: oklch(0.77 0.14 28 / 0.14);
+
+  --serif: "Songti SC", "STSongti-SC-Black", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "STSong", "SimSun", serif;
+  --sans: -apple-system, "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --z-canvas: 0;
+  --z-content: 1;
+  --z-toast: 10;
+}
+* { box-sizing: border-box; margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.75;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: none; }
+h1, h2, h3 { text-wrap: balance; font-weight: 900; }
+p { text-wrap: pretty; }
+[hidden] { display: none !important; }
+
+.wrap {
+  position: relative;
+  z-index: var(--z-content);
+  max-width: 460px;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + 20px) 20px calc(env(safe-area-inset-bottom) + 32px);
+}
+
+/* ---------- 背景时间线画布 ---------- */
+.lines-canvas {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+}
+
+/* ---------- 封面 ---------- */
+#intro .wrap { min-height: 100dvh; display: flex; flex-direction: column; }
+.intro-top { font-size: 13px; color: var(--muted); letter-spacing: 0.04em; }
+.intro-top b { color: var(--accent); font-weight: 600; }
+.intro-body { margin-top: auto; padding-bottom: 8px; }
+.intro-title {
+  font-family: var(--serif);
+  font-size: clamp(2.1rem, 10.5vw, 3rem);
+  line-height: 1.22;
+  letter-spacing: 0.01em;
+}
+.intro-title .num { color: var(--accent); font-variant-numeric: tabular-nums; }
+.intro-sub { margin-top: 18px; color: var(--muted); font-size: 15px; }
+.intro-list {
+  list-style: none; padding: 0;
+  margin-top: 22px;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.intro-list li {
+  font-size: 13px;
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+}
+.cta {
+  display: block; width: 100%;
+  margin-top: 32px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 17px; font-weight: 700;
+  letter-spacing: 0.06em;
+  transition: transform 0.2s var(--ease), opacity 0.2s;
+}
+.cta:active { transform: scale(0.98); }
+.fine { margin-top: 12px; font-size: 12px; color: var(--muted); text-align: center; }
+
+/* ---------- 答题 ---------- */
+.quiz-head { display: flex; align-items: center; gap: 14px; }
+.back {
+  width: 40px; height: 40px; flex: none;
+  margin-left: -10px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  color: var(--muted);
+}
+.back:active { background: var(--surface); }
+.progress { flex: 1; }
+.progress-meta {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.progress-track { position: relative; height: 2px; margin-top: 6px; background: var(--line); border-radius: 2px; }
+.progress-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.5s var(--ease);
+}
+.progress-fill::after {
+  content: ""; position: absolute; right: -4px; top: -3px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.q-zone { margin-top: 44px; }
+.q-tag { font-size: 13px; color: var(--accent); font-weight: 600; }
+.q-text {
+  margin-top: 8px;
+  font-size: 22px; line-height: 1.5; font-weight: 700;
+  min-height: 3em;
+}
+.opts { list-style: none; padding: 0; margin-top: 28px; display: grid; gap: 10px; }
+.opt {
+  width: 100%;
+  text-align: left;
+  padding: 15px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  font-size: 16px; line-height: 1.5;
+  transition: border-color 0.2s, background-color 0.2s, transform 0.2s var(--ease);
+  animation: rise 0.45s var(--ease) both;
+}
+.opt:nth-child(2) { animation-delay: 0.04s; }
+.opt:nth-child(3) { animation-delay: 0.08s; }
+.opt:nth-child(4) { animation-delay: 0.12s; }
+.opt:nth-child(5) { animation-delay: 0.16s; }
+.opt:active { transform: scale(0.985); }
+.opt.picked { border-color: var(--accent); background: var(--accent-soft); }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+
+/* ---------- 计算中 ---------- */
+#calc .wrap { min-height: 100dvh; display: grid; place-items: center; text-align: center; }
+.calc-num {
+  font-family: var(--serif);
+  font-size: 44px; font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+.calc-msg { margin-top: 10px; color: var(--muted); font-size: 15px; min-height: 1.75em; }
+
+/* ---------- 结果 ---------- */
+.r-universe { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.r-universe b { color: var(--ink); font-weight: 600; }
+.r-type {
+  margin-top: 28px;
+  font-family: var(--serif);
+  font-size: clamp(2.6rem, 13vw, 3.4rem);
+  line-height: 1.1;
+}
+.r-type small { display: block; font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--accent); margin-bottom: 10px; letter-spacing: 0.04em; }
+.r-slogan { margin-top: 14px; font-family: var(--serif); font-size: 19px; font-weight: 700; line-height: 1.5; }
+.r-desc { margin-top: 14px; color: var(--muted); }
+
+.bars { margin-top: 28px; display: grid; gap: 12px; }
+.bar-row { display: grid; grid-template-columns: 5.5em 1fr 2.6em; align-items: center; gap: 10px; font-size: 13px; }
+.bar-row span:last-child { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 4px; background: var(--primary); transform-origin: left; animation: grow 1.1s var(--ease) both; }
+.bar-row:nth-child(1) .bar i, .bar-row:nth-child(2) .bar i { background: var(--accent); }
+@keyframes grow { from { transform: scaleX(0); } }
+
+.sec { margin-top: 56px; }
+.sec-title { font-family: var(--serif); font-size: 24px; line-height: 1.35; }
+.sec-lead { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.sec p + p { margin-top: 10px; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.tags span { font-size: 13px; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+
+.pair { margin-top: 20px; display: grid; gap: 20px; }
+.pair h3 { font-size: 15px; font-weight: 700; }
+.pair h3::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: 2px; background: var(--primary); }
+.pair .warn h3::before { background: var(--accent); }
+.pair p { margin-top: 6px; color: var(--muted); font-size: 15px; }
+.tip {
+  margin-top: 22px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--surface);
+  font-size: 15px;
+}
+.tip b { color: var(--accent); }
+
+.chart { margin-top: 20px; width: 100%; height: auto; display: block; overflow: visible; }
+.chart text { font-family: var(--sans); font-size: 11px; fill: var(--muted); }
+.draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 2.2s 0.2s var(--ease) forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.hist-name { margin-top: 18px; font-size: 15px; font-weight: 700; }
+.hist-name span { color: var(--accent); }
+
+.nodes { list-style: none; padding: 0; margin-top: 14px; display: grid; gap: 8px; font-size: 15px; }
+.nodes li { display: grid; grid-template-columns: 3.4em 1fr; gap: 8px; }
+.nodes .age { color: var(--accent); font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.jobs { list-style: none; padding: 0; margin-top: 20px; counter-reset: job; }
+.jobs li { padding: 16px 0; border-top: 1px solid var(--line); }
+.jobs li:last-child { border-bottom: 1px solid var(--line); }
+.jobs b { display: block; font-size: 17px; }
+.jobs b::before { counter-increment: job; content: counter(job); display: inline-block; width: 1.6em; color: var(--accent); font-family: var(--serif); }
+.jobs span { display: block; margin-top: 4px; padding-left: 1.6em; color: var(--muted); font-size: 15px; }
+
+.lifeline { margin-top: 26px; }
+.lifeline h3 { font-size: 16px; display: flex; align-items: center; gap: 10px; }
+.lifeline h3 i { width: 18px; height: 2px; border-radius: 2px; flex: none; }
+.lifeline h3 em { font-style: normal; font-weight: 400; color: var(--muted); font-size: 13px; }
+
+/* ---------- 锁 ---------- */
+.locked { margin-top: 56px; }
+.locked-list { list-style: none; padding: 0; display: grid; gap: 22px; }
+.locked-list h3 { font-family: var(--serif); font-size: 20px; display: flex; align-items: center; gap: 8px; }
+.locked-list h3 svg { flex: none; color: var(--muted); }
+.ghost { margin-top: 10px; display: grid; gap: 8px; filter: blur(5px); opacity: 0.55; user-select: none; }
+.ghost span { height: 12px; border-radius: 6px; background: var(--muted); }
+.paywall {
+  margin-top: 36px;
+  padding: 24px 20px;
+  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.paywall h2 { font-family: var(--serif); font-size: 22px; }
+.paywall h2 span { color: var(--accent); }
+.paywall p { margin-top: 8px; color: var(--muted); font-size: 14px; }
+.paywall p b { color: var(--ink); }
+.code-row { display: flex; gap: 8px; margin-top: 18px; }
+.code-row input {
+  flex: 1; min-width: 0;
+  padding: 13px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  font-size: 17px; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.code-row input::placeholder { color: var(--muted); letter-spacing: 0.04em; text-transform: none; }
+.code-row input:focus { outline: none; border-color: var(--accent); }
+.code-row button {
+  flex: none;
+  padding: 0 20px;
+  border-radius: 12px;
+  background: var(--ink); color: var(--bg);
+  font-weight: 700;
+}
+.code-err { margin-top: 10px; font-size: 13px; color: var(--accent); min-height: 1.5em; }
+
+/* ---------- 尾部 ---------- */
+.share-hint { margin-top: 56px; text-align: center; font-family: var(--serif); font-size: 18px; font-weight: 700; }
+.share-hint span { display: block; margin-top: 4px; font-family: var(--sans); font-size: 13px; font-weight: 400; color: var(--muted); }
+.again { display: block; margin: 20px auto 0; padding: 10px 18px; font-size: 14px; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; }
+.disclaimer { margin-top: 36px; font-size: 12px; line-height: 1.7; color: var(--muted); text-align: center; }
+
+.screen { animation: screen-in 0.5s var(--ease) both; }
+@keyframes screen-in { from { opacity: 0; transform: translateY(14px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; }
+  .draw { stroke-dashoffset: 0; }
+}
+</style>
+</head>
+<body>
+<canvas class="lines-canvas" id="bg" aria-hidden="true"></canvas>
+
+<main>
+  <!-- 封面 -->
+  <section class="screen" id="intro">
+    <div class="wrap">
+      <p class="intro-top">平行宇宙档案馆 · <b>No.</b> 你的编号待生成</p>
+      <div class="intro-body">
+        <h1 class="intro-title"><span class="num">1000万</span>种人生里<br>你走的是哪一条线</h1>
+        <p class="intro-sub">23个问题，从你的恋爱方式、做事习惯和真实经历里，推演出属于你的那一条时间线。</p>
+        <ul class="intro-list">
+          <li>恋爱人格</li><li>最适合你的人</li><li>你的爱情线</li><li>适合的工作</li><li>三条平行人生</li>
+        </ul>
+        <button class="cta" id="start">进入我的宇宙</button>
+        <p class="fine">约 3 分钟 · 无需登录 · 答案只保存在你的手机里</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section class="screen" id="quiz" hidden>
+    <div class="wrap">
+      <div class="quiz-head">
+        <button class="back" id="back" aria-label="上一题">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="progress">
+          <div class="progress-meta"><span id="p-label">时间线展开中</span><span id="p-count">01 / 23</span></div>
+          <div class="progress-track"><div class="progress-fill" id="p-fill"></div></div>
+        </div>
+      </div>
+      <div class="q-zone">
+        <p class="q-tag" id="q-tag"></p>
+        <h2 class="q-text" id="q-text" tabindex="-1"></h2>
+        <ul class="opts" id="opts"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 计算 -->
+  <section class="screen" id="calc" hidden>
+    <div class="wrap">
+      <div>
+        <p class="calc-num" id="calc-num">10,000,000</p>
+        <p class="calc-msg" id="calc-msg" aria-live="polite">正在展开时间线…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 结果 -->
+  <section class="screen" id="result" hidden>
+    <div class="wrap" id="result-body"></div>
+  </section>
+</main>
+
+<script>
+/* ============ 配置 ============ */
+const STORE_NAME = '平行宇宙档案馆'; // 小红书店铺名，开店后改成真实的
+const STORE_KEY = 'plt_v1';
+
+/* ============ 题库 ============
+   d: 维度  A=安全感需求(焦虑)  V=亲密距离(回避)  O=探索欲  E=社交能量  C=秩序感
+   每个选项 [文字, 分值0-3]，选项顺序故意打乱 */
+const Q = [
+  { d: 'O', t: '你脑子里“如果当初……会怎样”的念头：', o: [['经常有，洗澡的时候最多', 2], ['几乎没有，想太多没用', 0], ['每天都在开平行宇宙', 3], ['偶尔会冒出来一下', 1]] },
+  { d: 'A', t: '对方说“晚点回你”，然后三个小时没消息。你：', o: [['正常干自己的事，ta忙完自然会回', 0], ['开始翻ta的动态，看ta在干嘛', 2], ['偶尔看一眼手机，有点在意', 1], ['脑子里已经演完一整部分手剧', 3]] },
+  { d: 'E', t: '连轴转了一整周，周五晚上你最想：', o: [['和一两个好朋友小聚', 2], ['一个人在家，外卖配剧', 0], ['约一大帮人吃饭喝酒', 3], ['看心情，可能出门走走', 1]] },
+  { d: 'V', t: '刚在一起一个月，对方说“想天天跟你视频”：', o: [['可以，但不想每天都打', 1], ['好呀，正合我意', 0], ['嘴上答应，然后经常“在忙”', 2], ['有点窒息，想找理由推掉', 3]] },
+  { d: 'C', t: '你的手机相册现在是什么状态？', o: [['几万张没删，找图全靠搜索', 0], ['分好了文件夹，井井有条', 3], ['偶尔心血来潮整理一次', 1], ['大体能找到想要的', 2]] },
+  { d: 'A', t: '吵架之后，你通常是：', o: [['很想立刻和好，对方不理我会更慌', 2], ['很快就能聊开，不太记仇', 0], ['会忍不住反复确认“你是不是不爱我了”', 3], ['嘴上说没事，心里还在复盘', 1]] },
+  { d: 'O', t: '一个完全陌生的城市，空出两天，你会：', o: [['提前做好攻略，必去景点一个不落', 1], ['找家舒服的酒店躺着也挺好', 0], ['不做计划，钻小巷子，看到什么算什么', 3], ['去本地人才去的地方，跟店主聊天', 2]] },
+  { d: 'E', t: '在一个谁都不认识的聚会上：', o: [['默默吃东西，计算几点能走', 0], ['很快就能跟人聊起来', 3], ['等别人来找我聊', 1], ['找到一个合拍的人聊一整晚', 2]] },
+  { d: 'V', t: '对方想听你讲讲小时候、家里的事：', o: [['打个哈哈岔开话题', 2], ['很自然地就聊了', 0], ['觉得有点被冒犯，这是我自己的事', 3], ['挑一些能说的说', 1]] },
+  { d: 'C', t: '一个两周后截止的任务，你一般：', o: [['最后三天爆肝', 1], ['当天就拆好计划，按部就班', 3], ['最后一晚，DDL是第一生产力', 0], ['提前一周开始做', 2]] },
+  { d: 'A', t: '你喜欢的人突然对你特别好，第一反应是：', o: [['开心又害怕，怕这种好不会持续', 3], ['开心，坦然接受', 0], ['想加倍对ta好，生怕自己不够', 2], ['开心，但会想ta是不是有什么事', 1]] },
+  { d: 'O', t: '一份高薪但每天重复的工作，和一份薪水一般但天天有新东西的工作：', o: [['先拿高薪，攒够钱再说', 1], ['新东西！重复会让我枯萎', 3], ['毫不犹豫选高薪', 0], ['纠结，但大概率选新东西', 2]] },
+  { d: 'E', t: '一整天说了很多话之后，你会：', o: [['电量耗尽，需要一个人待一整天', 0], ['越说越兴奋', 3], ['有点累，想安静一会儿', 1], ['还好，没什么感觉', 2]] },
+  { d: 'V', t: '你心情很差的时候：', o: [['会找对象说，想被抱一下', 0], ['自己消化，不想让任何人看到', 3], ['等心情好一点再说', 1], ['说“没事”，然后一个人刷手机', 2]] },
+  { d: 'C', t: '出门旅行之前：', o: [['订好住宿和大概路线', 2], ['票都是出发前一天才买', 0], ['行程精确到小时', 3], ['只买了票，剩下的到了再说', 1]] },
+  { d: 'A', t: '看到对象和异性朋友聊得很开心：', o: [['有点酸，但不会说出来', 1], ['一整晚都不太开心，开始比较自己哪里不如人', 3], ['挺好的，ta有自己的朋友', 0], ['会旁敲侧击地问清楚对方是谁', 2]] },
+  { d: 'O', t: '朋友推荐一部很冷门、评价两极的片子：', o: [['两极？那更想看了', 3], ['不看，我只看高分的', 0], ['看看简介，感兴趣就看', 2], ['有空再说吧', 1]] },
+  { d: 'E', t: '群里有人发起一个新活动：', o: [['看看谁去再决定', 1], ['我就是那个发起的人', 3], ['潜水，假装没看见', 0], ['第一时间报名', 2]] },
+  { d: 'V', t: '关于“和一个人定下来”这件事，你的真实感受是：', o: [['想到要和一个人绑一辈子就有点慌', 3], ['遇到对的人，挺向往的', 0], ['更想先把自己的人生过好', 2], ['不排斥，但不着急', 1]] },
+  { d: 'C', t: '你立过的flag（早睡、健身、学习……）：', o: [['三天打鱼两天晒网', 1], ['大部分都坚持下来了', 3], ['立flag的快乐就够了', 0], ['能坚持一阵子', 2]] },
+];
+
+const F = [
+  { d: 'age', t: '你现在的年龄是？', o: ['18岁及以下', '19–22岁', '23–26岁', '27–30岁', '31岁及以上'] },
+  { d: 'count', t: '到现在为止，你认真谈过几段恋爱？', o: ['还没有', '1段', '2–3段', '4段及以上'] },
+  { d: 'longest', t: '其中最长的一段，持续了多久？', o: ['没谈过', '不到3个月', '3个月到1年', '1到3年', '3年以上'] },
+];
+const TOTAL = Q.length + F.length;
+const AGE_MID = [18, 21, 25, 29, 33];
+
+/* ============ 结果库 ============ */
+const ATTACH = {
+  star: {
+    name: '恒星型', slogan: '你自己会发光，所以不需要靠谁来照亮。',
+    desc: '你在感情里很稳：不查岗、不冷战，想要什么能说出口。别人跟你在一起，会有一种“终于可以松口气”的感觉。你不缺爱，也不怕失去，这在你们这一代人里其实很少见。',
+    tags: ['有好奇心', '会制造小惊喜', '情绪稳定'],
+    fit: '同样情绪稳定、但比你多一点“火”的人。能带你去没去过的地方、做没做过的事。你不需要被拯救，你需要一个好玩伴。',
+    avoid: '你的稳定特别吸引缺安全感的人。被“选中”很正常，但记住：你是恋人，不是对方的情绪急救员。',
+    tip: '你的课题不是“怎么去爱”，而是别把所有的包容都当成理所应当，偶尔也要说“我也需要你”。',
+    love: [[2, '和一个人从朋友慢慢走成了恋人'], [5, '你们一起去了很多地方，吵架从不过夜'], [9, '你们的家，成了朋友们最爱来的地方']],
+  },
+  tide: {
+    name: '潮汐型', slogan: '你爱得很满，所以总怕退潮。',
+    desc: '你很会爱人：记得住对方随口一提的小事，也愿意为一段关系付出很多。只是对方一点点的冷淡，就会在你心里掀起一场涨潮。你不是“作”，你只是太在乎了。',
+    tags: ['回消息快', '说话直接', '会主动报备'],
+    fit: '回消息快、说话直接、会主动报备行程的人。确定感对你来说是氧气。对的人会让你慢慢发现：不用一直确认，ta也不会走。',
+    avoid: '忽冷忽热、总说“我就是这样的人”、需要你去猜的人。尤其是卫星型：你们会互相吸引，然后互相消耗，你越追，ta越退。',
+    tip: '下次心慌的时候，先问自己一句：“是ta做了什么，还是我想到了什么？”',
+    love: [[1, '遇见一个回消息很快的人'], [4, '第一次觉得“不用确认，也很安心”'], [8, '你终于不再害怕退潮']],
+  },
+  orbit: {
+    name: '卫星型', slogan: '你不是不爱，你只是需要自己的轨道。',
+    desc: '你很独立，很多事习惯自己扛。别人觉得你酷、难以靠近，其实你只是需要一点安全距离，才能放心地靠近。你的喜欢不太说出口，但都藏在行动里。',
+    tags: ['有自己的生活', '不黏人', '慢热也没关系'],
+    fit: '有自己的生活、不黏人、能理解“我需要一个人待会儿”的人。你慢热没关系，对的人会等你一点点打开。',
+    avoid: '需要每天大量陪伴和确认的人（尤其是潮汐型）。一开始会被ta的热烈打动，后来会觉得喘不过气。',
+    tip: '想逃的时候，试着说一句：“我需要一点时间，但我会回来。”这句话能救下很多段感情。',
+    love: [[3, '有个人愿意等你慢慢打开'], [6, '你第一次主动说出“我想你了”'], [10, '两个人各有轨道，也有固定的交汇']],
+  },
+  comet: {
+    name: '彗星型', slogan: '想靠近，又怕被灼伤。',
+    desc: '你渴望一段很深的关系，可每当真的有人靠近，你又会下意识后退。你的感情常常是热烈地来、突然地走，连你自己都说不清为什么。这不是你的错，是你曾经学会了保护自己。',
+    tags: ['说到做到', '有耐心', '情绪可预测'],
+    fit: '耐心、言行一致、情绪可预测的人。ta不一定浪漫，但说到做到。对你来说，“稳定”比“心动”更治愈。',
+    avoid: '同样大起大落的人。两颗彗星相撞很壮观，但往往只有一瞬间。',
+    tip: '不用一次就完全相信一个人。允许自己慢一点，一步一步来，信任可以分期付款。',
+    love: [[2, '一段来得很快的感情，教会你很多'], [5, '遇见一个说到做到的人'], [9, '你发现，原来自己也可以停下来']],
+  },
+};
+
+const HISTORY = {
+  prologue: ['序章型', '你的爱情线还停在序章。这不是落后，你只是还没把自己交给一个不值得的人。序章写得长的人，一旦翻开正文，往往很认真。'],
+  deep: ['深情长线型', '你只认真爱过一个人，而且一爱就是很久。你的感情不靠数量，靠浓度。那段经历在你身上留下的印记，可能比你以为的更深。'],
+  rough: ['跌宕成长型', '你经历过长久的陪伴，也经历过不止一次的告别。你比很多人更早明白，爱不只是一种感觉，更是一种能力。下一段感情里，你会是更清醒的那个人。'],
+  spark: ['高频短线型', '你心动得快，清醒得也快。每一段都不长，但每一段你都是真心的。你的课题不是“找不到”，而是“在想逃之前，再多留一下看看”。'],
+  trial: ['初次试航型', '你有过一段不算长的感情，像一次试航。你已经大概知道了自己在关系里是什么样子，真正的远航还在后面。'],
+};
+
+const CAREER = {
+  OEC: { name: '开拓者', slogan: '你想做的事，总要亲手把它做出来。',
+    jobs: [['产品经理', '想法多又能落地，你最受不了“只是想想”'], ['创业 / 合伙人', '你不太适合长期执行别人的想法'], ['品牌策划', '会讲故事，也盯得住细节']],
+    main: [[3, '成为团队里“有事就找你”的人'], [7, '带着一个从零做起的项目走到台前'], [12, '拥有一份写着自己名字的事业']],
+    brave: [[2, '辞职去做那个一直躺在备忘录里的点子'], [5, '第一次失败，但比想象中站起来得更快'], [10, '在另一座城市重新开始，而且干得不错']] },
+  OEc: { name: '点火者', slogan: '你走到哪，哪里就热闹起来。',
+    jobs: [['自媒体 / 博主', '你的表达欲本身就是生产力'], ['活动策划 / 主持', '你天生知道怎么让一个场子活起来'], ['创意广告', '脑洞多，而且不怕被否定']],
+    main: [[2, '一条随手发的内容突然火了'], [6, '把爱好变成了真金白银的收入'], [11, '身边永远有一群愿意陪你瞎折腾的人']],
+    brave: [[1, '认认真真把一个账号更新满一年'], [4, '跨进一个完全陌生的行业'], [9, '成为某个圈子里叫得出名字的人']] },
+  OeC: { name: '建筑师', slogan: '你很安静，但脑子里在盖楼。',
+    jobs: [['设计师（UI / 建筑 / 产品）', '审美和逻辑你两样都有'], ['研究员 / 工程师', '你能在一个问题上钻得比别人都深'], ['数据分析', '你喜欢从一团乱麻里找出规律']],
+    main: [[3, '在一个领域里被认可为“真懂的人”'], [7, '做出一件让你骄傲很多年的作品'], [12, '拥有了随时说“不”的底气']],
+    brave: [[2, '读研，或者转向一个更难的方向'], [5, '把作品公开，被很多人看见'], [10, '有人因为你的作品改变了做事的方式']] },
+  Oec: { name: '漫游者', slogan: '你不是迷路，你是在收集风景。',
+    jobs: [['插画 / 写作 / 摄影', '你的敏感是一种天赋'], ['自由职业 / 远程工作', '固定的格子间会慢慢磨掉你'], ['文化 / 策展 / 内容行业', '你对“有意思”的东西嗅觉很准']],
+    main: [[2, '换过几份工作，终于知道了自己不要什么'], [6, '找到一种不用朝九晚五也能活得很好的方式'], [11, '住在一个你自己选的地方']],
+    brave: [[1, '一个人出发，去一个很远的地方'], [4, '出版或展出你的第一份作品'], [9, '活成了别人口中那种“真自由”的人']] },
+  oEC: { name: '指挥官', slogan: '你天生知道事情该怎么推进。',
+    jobs: [['管理岗 / 团队负责人', '你能把一群人拧成一股绳'], ['销售管理 / 商务', '目标感强，越难越来劲'], ['HR / 组织发展', '你看人准，也懂怎么让人发挥出来']],
+    main: [[3, '第一次带团队'], [7, '成为能拍板的那个人'], [12, '经济上不再为钱焦虑']],
+    brave: [[2, '跳去一个更大的平台'], [5, '接下一个没人敢接的烂摊子，并且搞定了'], [10, '开始投资自己，或者别人的事业']] },
+  oEc: { name: '连接者', slogan: '你是人群里的那根线。',
+    jobs: [['销售 / 商务拓展', '你的人缘就是你的业绩'], ['客户关系 / 导游 / 空乘', '你能让陌生人很快放下戒备'], ['社群运营', '你记得住每个人的名字和喜好']],
+    main: [[2, '认识了一个改变你方向的人'], [6, '靠人脉做成了一件大事'], [11, '朋友遍布好几座城市']],
+    brave: [[1, '去一线城市或者国外闯一闯'], [4, '自己做一门小生意'], [9, '成为别人口中“有事找ta准没错”的人']] },
+  oeC: { name: '守护者', slogan: '有你在，一切都稳稳的。',
+    jobs: [['财务 / 会计 / 审计', '细心和耐心是你的护城河'], ['医护 / 药学', '你可靠，让人安心'], ['法务 / 体制内岗位', '规则在你手里不是束缚，是武器']],
+    main: [[3, '考下一张关键的证书'], [7, '在一个靠谱的地方扎下根'], [12, '拥有一个真正属于自己的家']],
+    brave: [[2, '试了一个跟专业完全无关的副业'], [5, '发现自己其实很会带人'], [10, '成了家里最有底气的那个人']] },
+  oec: { name: '生活家', slogan: '你比谁都懂怎么好好过日子。',
+    jobs: [['手作 / 烘焙 / 咖啡', '小而美的事，你能做到极致'], ['弹性 / 远程工作', '你的节奏，不该被打卡机决定'], ['宠物 / 园艺 / 疗愈相关', '你身上有一种让人放松的气场']],
+    main: [[2, '找到一份不用勉强自己的工作'], [6, '拥有一个完全按自己喜好布置的小窝'], [11, '过上了很多人羡慕的慢生活']],
+    brave: [[1, '把爱好拿出来，卖出了第一单'], [4, '开了一家自己的小店'], [9, '小店有了常客，他们都叫得出你的名字']] },
+};
+
+/* ============ 工具 ============ */
+const $ = (s) => document.querySelector(s);
+const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const SALT = 'pl-2026-u7';
+function fnv1a(str) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h;
+}
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function checkCode(raw) {
+  const c = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (c.length !== 8 || [...c].some((ch) => !ALPHABET.includes(ch))) return false;
+  const h = fnv1a(c.slice(0, 6) + SALT);
+  return c[6] === ALPHABET[h % 31] && c[7] === ALPHABET[(h >>> 8) % 31];
+}
+function load() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; }
+}
+function save(s) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch {}
+}
+const pad = (n) => String(n).padStart(2, '0');
+
+/* ============ 背景时间线 ============ */
+const lines = (() => {
+  const cv = $('#bg');
+  const ctx = cv.getContext('2d');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rand = mulberry32(20261105);
+  const strands = Array.from({ length: 46 }, () => ({
+    slope: (rand() - 0.55) * 0.9,
+    amp: 10 + rand() * 40,
+    freq: 0.004 + rand() * 0.01,
+    phase: rand() * Math.PI * 2,
+    speed: 0.15 + rand() * 0.35,
+    alpha: 0.06 + rand() * 0.16,
+  }));
+  const hero = { slope: -0.3, amp: 26, freq: 0.007, phase: 1.2, speed: 0.25 };
+  let w, h, dpr, t0 = performance.now(), mode = 'calm', modeAt = 0, raf;
+  const css = getComputedStyle(document.documentElement);
+  const primary = css.getPropertyValue('--primary').trim();
+  const accent = css.getPropertyValue('--accent').trim();
+
+  function size() {
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    w = innerWidth; h = innerHeight;
+    cv.width = w * dpr; cv.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function path(s, t, spread) {
+    const ox = -20, oy = h * 0.4;
+    ctx.beginPath();
+    for (let x = ox; x <= w + 20; x += 8) {
+      const k = (x - ox) / (w + 40);
+      const y = oy + (s.slope * (x - ox) + Math.sin(x * s.freq + s.phase + t * s.speed) * s.amp * k) * spread;
+      x === ox ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+  }
+  function frame(now) {
+    const t = reduce ? 0 : (now - t0) / 1000;
+    ctx.clearRect(0, 0, w, h);
+    let spread = 1, heroA = 0.9, fast = 1;
+    if (mode === 'calc') {
+      const p = Math.min(1, (now - modeAt) / 3000);
+      fast = 4;
+      spread = 1 - 0.85 * p * p;
+      heroA = 0.3 + 0.7 * p;
+    } else if (mode === 'result') {
+      spread = 0.9; heroA = 0.35;
+    }
+    ctx.lineWidth = 1;
+    for (const s of strands) {
+      ctx.strokeStyle = primary;
+      ctx.globalAlpha = s.alpha * (mode === 'result' ? 0.5 : 1);
+      path(s, t * fast, spread);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = heroA;
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 2;
+    path(hero, t * fast, mode === 'calc' ? 1 : 1);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    if (!reduce && !document.hidden) raf = requestAnimationFrame(frame);
+  }
+  function start() { cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
+  addEventListener('resize', () => { size(); start(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) start(); });
+  size(); start();
+  return { set(m) { mode = m; modeAt = performance.now(); start(); } };
+})();
+
+/* ============ 流程 ============ */
+let state = load();
+let step = 0;
+let answers = [];
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach((s) => { s.hidden = s.id !== id; });
+  scrollTo(0, 0);
+}
+
+function current() {
+  return step < Q.length ? Q[step] : F[step - Q.length];
+}
+
+function renderQ() {
+  const q = current();
+  const isFact = step >= Q.length;
+  $('#p-count').textContent = `${pad(step + 1)} / ${TOTAL}`;
+  $('#p-label').textContent = isFact ? '最后几个现实锚点' : '时间线展开中';
+  $('#p-fill').style.width = `${(step / TOTAL) * 100}%`;
+  $('#q-tag').textContent = isFact ? '现实锚点' : `第 ${step + 1} 题`;
+  $('#q-text').textContent = q.t;
+  const ul = $('#opts');
+  ul.innerHTML = '';
+  q.o.forEach((o, i) => {
+    // 谈过恋爱的人，"最长一段"不再显示"没谈过"
+    if (q.d === 'longest' && i === 0) return;
+    const li = document.createElement('li');
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.textContent = isFact ? o : o[0];
+    if (answers[step] === i) b.classList.add('picked');
+    b.addEventListener('click', () => pick(i, b));
+    li.appendChild(b);
+    ul.appendChild(li);
+  });
+  ul.querySelectorAll('li').forEach((li, i) => { li.firstChild.style.animationDelay = `${i * 0.04}s`; });
+}
+
+let busy = false;
+function pick(i, btn) {
+  if (busy) return;
+  busy = true;
+  document.querySelectorAll('.opt').forEach((b) => b.classList.remove('picked'));
+  btn.classList.add('picked');
+  answers[step] = i;
+  setTimeout(() => {
+    busy = false;
+    step++;
+    const countIdx = answers[Q.length + 1];
+    if (step === Q.length + 2 && countIdx === 0) { answers[step] = 0; step++; }
+    if (step >= TOTAL) return finish();
+    renderQ();
+  }, 260);
+}
+
+$('#start').addEventListener('click', () => {
+  step = 0; answers = [];
+  show('quiz');
+  renderQ();
+});
+$('#back').addEventListener('click', () => {
+  if (step === 0) { show('intro'); return; }
+  step--;
+  if (step === Q.length + 2 && answers[Q.length + 1] === 0) step--;
+  renderQ();
+});
+
+function finish() {
+  state = { answers: answers.slice(0, TOTAL), unlocked: !!state.unlocked };
+  save(state);
+  show('calc');
+  lines.set('calc');
+  const msgs = ['正在展开 10,000,000 条时间线…', '排除不可能的你…', '比对你的恋爱轨迹…', '锁定你的那一条线'];
+  const numEl = $('#calc-num');
+  const msgEl = $('#calc-msg');
+  const t0 = performance.now();
+  const target = universeNo(state.answers);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const dur = reduce ? 600 : 3200;
+  (function tick(now) {
+    const p = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - p, 4);
+    numEl.textContent = Math.round(10000000 - (10000000 - target) * e).toLocaleString('en-US');
+    msgEl.textContent = msgs[Math.min(msgs.length - 1, Math.floor(p * msgs.length))];
+    if (p < 1) requestAnimationFrame(tick);
+    else setTimeout(() => renderResult(), 450);
+  })(t0);
+}
+
+/* ============ 计算 ============ */
+function universeNo(a) {
+  return (fnv1a(a.join('-') + 'universe') % 9999999) + 1;
+}
+
+function compute(a) {
+  const s = { A: 0, V: 0, O: 0, E: 0, C: 0 };
+  Q.forEach((q, i) => { s[q.d] += q.o[a[i]][1]; });
+  const hiA = s.A >= 6, hiV = s.V >= 6;
+  const attach = hiA ? (hiV ? 'comet' : 'tide') : (hiV ? 'orbit' : 'star');
+  const career = (s.O >= 6 ? 'O' : 'o') + (s.E >= 6 ? 'E' : 'e') + (s.C >= 6 ? 'C' : 'c');
+  const f = a.slice(Q.length);
+  const age = AGE_MID[f[0]];
+  const count = f[1], longest = f[2];
+  let hist;
+  if (count === 0) hist = 'prologue';
+  else if (longest >= 3) hist = count === 1 ? 'deep' : 'rough';
+  else hist = count === 1 ? 'trial' : 'spark';
+  return { s, attach, career, age, count, longest, hist, no: universeNo(a), seed: fnv1a(a.join('')) };
+}
+
+const pct = (v) => Math.round(8 + (v / 12) * 88);
+
+/* ============ 图表 ============ */
+function smooth(pts) {
+  return pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+}
+
+function loveChart(R) {
+  const rnd = mulberry32(R.seed);
+  const base = 150, NOW = 150, END = 330;
+  const n = [0, 1, 2 + (R.seed % 2), 4][R.count];
+  const hMax = [0, 34, 52, 74, 92][R.longest];
+  const wMax = [0, 7, 11, 16, 22][R.longest];
+  const big = Math.floor(rnd() * n);
+  const bumps = Array.from({ length: n }, (_, i) => {
+    const k = i === big ? 1 : 0.35 + rnd() * 0.3;
+    return { c: 22 + (i + 0.5) * (118 / n), h: hMax * k, w: wMax * (i === big ? 1 : 0.6) };
+  });
+  const yPast = (x) => {
+    if (!n) return base - 4 - 3 * Math.sin(x / 9);
+    return base - bumps.reduce((acc, b) => acc + b.h * Math.exp(-((x - b.c) ** 2) / (2 * b.w * b.w)), 0);
+  };
+  const target = {
+    star: (t) => base - (30 + 82 * t) - 4 * Math.sin(t * 12),
+    tide: (t) => base - (26 + 84 * t) - 30 * (1 - t) * Math.sin(t * 22),
+    orbit: (t) => base - (12 + 96 / (1 + Math.exp(-(t - 0.55) * 11))),
+    comet: (t) => base - (24 + 74 * t) - 62 * Math.exp(-((t - 0.16) ** 2) / 0.004) + 22 * Math.exp(-((t - 0.34) ** 2) / 0.003),
+  }[R.attach];
+  const y0 = yPast(NOW);
+  const yFut = (x) => {
+    const t = (x - NOW) / (END - NOW);
+    const s = Math.min(1, t / 0.14);
+    const e = s * s * (3 - 2 * s);
+    return Math.max(16, Math.min(168, y0 * (1 - e) + target(t) * e));
+  };
+  const past = [], fut = [];
+  for (let x = 10; x <= NOW; x += 2.5) past.push([x, yPast(x)]);
+  for (let x = NOW; x <= END; x += 2.5) fut.push([x, yFut(x)]);
+  const nodeT = [0.24, 0.55, 0.88];
+  const nodes = nodeT.map((t, i) => {
+    const x = NOW + t * (END - NOW);
+    const y = yFut(x);
+    return `<circle cx="${x}" cy="${y}" r="9" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="${x}" y="${y + 3.8}" text-anchor="middle" style="fill:var(--accent);font-weight:700">${i + 1}</text>`;
+  }).join('');
+  return `<svg class="chart" viewBox="0 0 340 196" role="img" aria-label="你的爱情线：过去与未来的起伏曲线">
+    <line x1="10" y1="${base + 12}" x2="${END}" y2="${base + 12}" stroke="var(--line)"/>
+    <line x1="${NOW}" y1="14" x2="${NOW}" y2="${base + 12}" stroke="var(--line)" stroke-dasharray="3 4"/>
+    <text x="10" y="${base + 30}">过去</text>
+    <text x="${NOW}" y="${base + 30}" text-anchor="middle" style="fill:var(--ink)">现在 · ${R.age}岁</text>
+    <text x="${END}" y="${base + 30}" text-anchor="end">未来</text>
+    <path d="${smooth(past)}" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="draw" pathLength="1" d="${smooth(fut)}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${nodes}
+  </svg>`;
+}
+
+function lifeChart(R) {
+  const rnd = mulberry32(R.seed + 7);
+  const ox = 22, oy = 84, END = 326;
+  const curve = (yEnd) => {
+    const pts = [];
+    for (let x = ox; x <= END; x += 3) {
+      const k = Math.min(1, (x - ox) / 190);
+      const e = k * k * (3 - 2 * k);
+      pts.push([x, oy + (yEnd - oy) * e]);
+    }
+    return smooth(pts);
+  };
+  const faint = Array.from({ length: 16 }, () => {
+    const yEnd = 8 + rnd() * 152;
+    return `<path d="${curve(yEnd)}" fill="none" stroke="var(--primary)" stroke-opacity="${0.08 + rnd() * 0.14}" stroke-width="1"/>`;
+  }).join('');
+  const main = [[24, 'var(--accent)', 2.5], [84, 'var(--ink)', 2], [144, 'var(--primary)', 2]];
+  const yAt = (yEnd, x) => { const k = Math.min(1, (x - ox) / 190); return oy + (yEnd - oy) * k * k * (3 - 2 * k); };
+  const strong = main.map(([y, c, w]) => `<path class="draw" pathLength="1" d="${curve(y)}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>` +
+    [150, 232, 314].map((x) => `<circle cx="${x}" cy="${yAt(y, x)}" r="3.5" fill="${c}"/>`).join('')).join('');
+  return `<svg class="chart" viewBox="0 0 340 176" role="img" aria-label="从现在出发分岔的三条人生线">
+    ${faint}${strong}
+    <circle cx="${ox}" cy="${oy}" r="6" fill="var(--bg)" stroke="var(--ink)" stroke-width="2"/>
+    <text x="${ox}" y="${oy + 24}" text-anchor="start" style="fill:var(--ink)">现在</text>
+  </svg>`;
+}
+
+/* ============ 结果页 ============ */
+const LOCK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+
+function nodesList(items, age) {
+  return `<ul class="nodes">${items.map(([off, txt]) => `<li><span class="age">${age + off}岁</span><span>${txt}</span></li>`).join('')}</ul>`;
+}
+
+function renderResult() {
+  const R = compute(state.answers);
+  const T = ATTACH[R.attach];
+  const J = CAREER[R.career];
+  const [histName, histText] = HISTORY[R.hist];
+  const bars = [['安全感需求', R.s.A], ['亲密距离感', R.s.V], ['探索欲', R.s.O], ['社交能量', R.s.E], ['秩序感', R.s.C]];
+
+  const head = `
+    <p class="r-universe">你来自 <b>第 ${R.no.toLocaleString('en-US')} 号宇宙</b></p>
+    <h1 class="r-type" tabindex="-1"><small>你的恋爱人格</small>${T.name}恋人</h1>
+    <p class="r-slogan">${T.slogan}</p>
+    <p class="r-desc">${T.desc}</p>
+    <div class="bars">${bars.map(([k, v], i) => `<div class="bar-row"><span>${k}</span><div class="bar"><i style="width:${pct(v)}%;animation-delay:${0.15 + i * 0.08}s"></i></div><span>${pct(v)}%</span></div>`).join('')}</div>`;
+
+  const full = `
+    <section class="sec">
+      <h2 class="sec-title">最适合你的恋人类型</h2>
+      <div class="tags">${T.tags.map((t) => `<span>${t}</span>`).join('')}</div>
+      <div class="pair">
+        <div><h3>对的人</h3><p>${T.fit}</p></div>
+        <div class="warn"><h3>要小心的人</h3><p>${T.avoid}</p></div>
+      </div>
+      <p class="tip"><b>给你的一句话：</b>${T.tip}</p>
+    </section>
+
+    <section class="sec">
+      <h2 class="sec-title">你的爱情线</h2>
+      <p class="sec-lead">左边是你走过的路，右边是这条线在你的宇宙里大概率会怎么走。</p>
+      ${loveChart(R)}
+      <p class="hist-name">过去：<span>${histName}</span></p>
+      <p class="r-desc" style="margin-top:6px">${histText}</p>
+      ${nodesList(T.love, R.age)}
+    </section>
+
+    <section class="sec">
+      <h2 class="sec-title">你是「${J.name}」，适合这样的工作</h2>
+      <p class="sec-lead">${J.slogan}</p>
+      <ol class="jobs">${J.jobs.map(([j, r]) => `<li><b>${j}</b><span>${r}</span></li>`).join('')}</ol>
+    </section>
+
+    <section class="sec">
+      <h2 class="sec-title">平行宇宙里的三条人生线</h2>
+      <p class="sec-lead">在 1000 万种可能里，离你最近的三条。</p>
+      ${lifeChart(R)}
+      <div class="lifeline"><h3><i style="background:var(--ink)"></i>主线<em>你最可能走的那条</em></h3>${nodesList(J.main, R.age)}</div>
+      <div class="lifeline"><h3><i style="background:var(--primary)"></i>支线<em>如果你再勇敢一点</em></h3>${nodesList(J.brave, R.age)}</div>
+      <div class="lifeline"><h3><i style="background:var(--accent)"></i>感情线<em>如果你遇见对的人</em></h3>${nodesList(T.love, R.age)}</div>
+    </section>
+
+    <p class="share-hint">截图晒出你的宇宙编号<span>看看朋友来自哪个宇宙，你们的线会不会交汇</span></p>`;
+
+  const locked = `
+    <section class="locked">
+      <ul class="locked-list">
+        ${['最适合你的恋人类型', '你的爱情线（过去 + 未来走势）', `你是「${J.name}」：适合的 3 个工作方向`, '平行宇宙里的三条人生线'].map((t) => `
+          <li><h3>${LOCK}${t}</h3><div class="ghost"><span style="width:92%"></span><span style="width:78%"></span><span style="width:60%"></span></div></li>`).join('')}
+      </ul>
+      <div class="paywall">
+        <h2>解锁完整档案 <span>¥1</span></h2>
+        <p>在小红书搜索店铺 <b>「${STORE_NAME}」</b>，拍下后会自动发送 8 位解锁码。回到这里输入即可，测试结果会一直保存在这台手机上。</p>
+        <form class="code-row" id="code-form" autocomplete="off">
+          <input id="code" inputmode="text" maxlength="12" placeholder="输入解锁码" aria-label="解锁码" autocapitalize="characters" spellcheck="false">
+          <button type="submit">解锁</button>
+        </form>
+        <p class="code-err" id="code-err" aria-live="polite"></p>
+      </div>
+    </section>`;
+
+  $('#result-body').innerHTML = head + (state.unlocked ? full : locked) + `
+    <button class="again" id="again">重新测一次</button>
+    <p class="disclaimer">本测试基于依恋理论与人格特质模型改编，结果仅供娱乐，<br>不构成心理诊断或任何人生建议。我们不收集你的任何个人信息。</p>`;
+
+  show('result');
+  lines.set('result');
+
+  $('#again').addEventListener('click', () => {
+    state = { unlocked: state.unlocked };
+    save(state);
+    step = 0; answers = [];
+    lines.set('calm');
+    show('intro');
+  });
+  const form = $('#code-form');
+  if (form) form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const v = $('#code').value;
+    if (checkCode(v)) {
+      state.unlocked = true;
+      save(state);
+      renderResult();
+      requestAnimationFrame(() => document.querySelector('.sec')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    } else {
+      $('#code-err').textContent = v.trim() ? '解锁码不对，检查一下有没有输错（不区分大小写）' : '先输入解锁码哦';
+    }
+  });
+}
+
+/* 之前测过：直接回到结果（从小红书买完码回来时用） */
+if (state.answers && state.answers.length === TOTAL) {
+  lines.set('result');
+  renderResult();
+}
+</script>
+</body>
+</html>
