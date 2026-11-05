@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0d1a2e">
+<meta name="theme-color" content="#1d0b24">
 <title>1000万种人生里，你走的是哪一条线</title>
-<meta name="description" content="23个问题，展开属于你的平行宇宙：恋爱人格、爱情线、适合的工作、三条人生线。仅供娱乐。">
+<meta name="description" content="50个问题，跳进另一个宇宙：恋爱人格、16型人格、爱情线、三条平行人生。仅供娱乐。">
 <style>
 :root {
-  --bg: oklch(0.17 0.045 240);
-  --surface: oklch(0.215 0.05 238);
-  --line: oklch(0.34 0.05 236);
-  --ink: oklch(0.96 0.01 230);
-  --muted: oklch(0.77 0.035 232);
-  --primary: oklch(0.74 0.11 230);
-  --accent: oklch(0.77 0.14 28);
-  --accent-soft: oklch(0.77 0.14 28 / 0.14);
+  --bg: oklch(0.17 0.05 320);
+  --surface: oklch(0.22 0.06 318 / 0.74);
+  --line: oklch(0.5 0.07 320 / 0.45);
+  --ink: oklch(0.97 0.01 330);
+  --muted: oklch(0.85 0.035 330);
+  --primary: oklch(0.81 0.1 292);
+  --accent: oklch(0.81 0.13 32);
+  --accent-soft: oklch(0.81 0.13 32 / 0.16);
+  --glass: blur(14px) saturate(1.2);
 
   --serif: "Songti SC", "STSongti-SC-Black", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "STSong", "SimSun", serif;
   --sans: -apple-system, "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
@@ -51,7 +52,25 @@ p { text-wrap: pretty; }
   padding: calc(env(safe-area-inset-top) + 20px) 20px calc(env(safe-area-inset-bottom) + 32px);
 }
 
-/* ---------- 背景时间线画布 ---------- */
+/* ---------- 背景：颠倒的城市 ---------- */
+.scene { position: fixed; inset: 0; z-index: var(--z-canvas); overflow: hidden; pointer-events: none; }
+#city { position: absolute; inset: -12px; width: calc(100% + 24px); height: calc(100% + 24px); animation: drift 14s ease-in-out infinite alternate; }
+@keyframes drift { to { transform: translate3d(-6px, 8px, 0) scale(1.015); } }
+.faller {
+  position: absolute; left: calc(50% + 46px); top: 32%;
+  width: 28px; height: auto;
+  transform-origin: 50% 30%;
+  animation: float 6s ease-in-out infinite alternate;
+  transition: opacity 0.6s;
+}
+@keyframes float { from { transform: translateY(-8px) rotate(-24deg); } to { transform: translateY(8px) rotate(-10deg); } }
+.scrim { position: absolute; inset: 0; transition: opacity 0.8s var(--ease); }
+.scrim-intro { background: linear-gradient(to bottom, transparent 0%, transparent 46%, oklch(0.16 0.05 318 / 0.6) 64%, oklch(0.14 0.05 318 / 0.94) 100%); }
+.scrim-dim { background: linear-gradient(to bottom, oklch(0.15 0.05 318 / 0.62), oklch(0.14 0.05 318 / 0.88) 40%, oklch(0.13 0.05 318 / 0.94)); opacity: 0; }
+body:not([data-screen="intro"]) .scrim-intro { opacity: 0; }
+body:not([data-screen="intro"]) .scrim-dim { opacity: 1; }
+body:not([data-screen="intro"]) .faller { opacity: 0; }
+
 .lines-canvas {
   position: fixed; inset: 0;
   width: 100%; height: 100%;
@@ -59,19 +78,67 @@ p { text-wrap: pretty; }
   pointer-events: none;
 }
 
+/* ---------- 进入宇宙：震动 → 闪烁 → 白闪 → 黑场 ---------- */
+.flash { position: fixed; inset: 0; z-index: var(--z-toast); pointer-events: none; opacity: 0; background: #fff; }
+body.warping { overflow: hidden; }
+body.warping .scene, body.warping #intro .wrap { animation: quake 1.05s linear both; }
+body.warping .intro-body, body.warping .intro-top { animation: glitch 1.05s steps(1, end) both; }
+body.warping .faller { animation: drop 1.1s cubic-bezier(0.55, 0, 1, 0.45) both; }
+body.warping .flash { animation: flash 1.6s linear both; }
+@keyframes quake {
+  0% { transform: none; }
+  8% { transform: translate(-2px, 1px); }
+  16% { transform: translate(3px, -2px) rotate(0.3deg); }
+  24% { transform: translate(-4px, 3px); }
+  32% { transform: translate(5px, -1px) rotate(-0.5deg); }
+  40% { transform: translate(-7px, 4px) rotate(0.6deg); }
+  48% { transform: translate(8px, -5px); }
+  56% { transform: translate(-10px, 6px) rotate(-0.8deg); }
+  64% { transform: translate(11px, -4px) rotate(0.9deg); }
+  72% { transform: translate(-12px, 7px); }
+  80% { transform: translate(10px, -8px) rotate(-1deg) scale(1.02); }
+  90% { transform: translate(-6px, 5px) scale(1.05); }
+  100% { transform: scale(1.08); }
+}
+@keyframes glitch {
+  0% { filter: none; opacity: 1; }
+  18% { filter: invert(1); text-shadow: -3px 0 #ff2a6d, 3px 0 #2de2e6; transform: translateX(-4px) skewX(-6deg); }
+  26% { filter: none; transform: translateX(3px); }
+  34% { filter: invert(1) contrast(2); transform: translateX(-2px) skewX(8deg); }
+  42% { filter: none; text-shadow: 3px 0 #ff2a6d, -3px 0 #2de2e6; transform: none; }
+  50% { filter: invert(1); transform: translateX(6px); }
+  56% { filter: brightness(3); transform: translateX(-6px) skewX(-10deg); }
+  62% { filter: invert(1); opacity: 0.6; }
+  68% { opacity: 0; }
+  74% { opacity: 1; filter: brightness(3); }
+  80%, 100% { opacity: 0; }
+}
+@keyframes drop { to { transform: translateY(70vh) rotate(40deg) scale(0.4); opacity: 0; } }
+@keyframes flash {
+  0%, 58% { opacity: 0; background: #fff; }
+  62% { opacity: 1; background: #fff; }
+  68% { opacity: 1; background: #000; }
+  72% { opacity: 1; background: #fff; }
+  76%, 86% { opacity: 1; background: #000; }
+  100% { opacity: 0; background: #000; }
+}
+
 /* ---------- 封面 ---------- */
 #intro .wrap { min-height: 100dvh; display: flex; flex-direction: column; }
-.intro-top { font-size: 13px; color: var(--muted); letter-spacing: 0.04em; }
-.intro-top b { color: var(--accent); font-weight: 600; }
+.intro-top { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink); letter-spacing: 0.06em; text-shadow: 0 1px 8px oklch(0.1 0.05 318 / 0.8); }
+.sig { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); animation: blink 1.4s steps(2, jump-none) infinite; }
+@keyframes blink { 50% { opacity: 0.2; } }
+.intro-title em { font-style: normal; color: var(--accent); }
 .intro-body { margin-top: auto; padding-bottom: 8px; }
 .intro-title {
   font-family: var(--serif);
-  font-size: clamp(2.1rem, 10.5vw, 3rem);
-  line-height: 1.22;
+  font-size: clamp(2rem, 9.6vw, 2.8rem);
+  line-height: 1.24;
+  text-shadow: 0 2px 24px oklch(0.12 0.05 318 / 0.7);
   letter-spacing: 0.01em;
 }
 .intro-title .num { color: var(--accent); font-variant-numeric: tabular-nums; }
-.intro-sub { margin-top: 18px; color: var(--muted); font-size: 15px; }
+.intro-sub { margin-top: 14px; text-shadow: 0 1px 10px oklch(0.12 0.05 318 / 0.8); color: var(--muted); font-size: 15px; }
 .intro-list {
   list-style: none; padding: 0;
   margin-top: 22px;
@@ -83,10 +150,11 @@ p { text-wrap: pretty; }
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--ink);
+  background: oklch(0.2 0.05 318 / 0.45);
 }
 .cta {
   display: block; width: 100%;
-  margin-top: 32px;
+  margin-top: 26px;
   padding: 16px 20px;
   border-radius: 14px;
   background: var(--ink);
@@ -108,6 +176,7 @@ p { text-wrap: pretty; }
   color: var(--muted);
 }
 .back:active { background: var(--surface); }
+.opt, .ch-next, .tip, .paywall, .mask, .intro-list li { -webkit-backdrop-filter: var(--glass); backdrop-filter: var(--glass); }
 .progress { flex: 1; }
 .progress-meta {
   display: flex; justify-content: space-between;
@@ -177,7 +246,7 @@ p { text-wrap: pretty; }
 .ring .node.on circle { fill: var(--bg); stroke: var(--ink); }
 .ring .node.on text { fill: var(--ink); }
 .ring-icon { position: absolute; inset: 0; display: grid; place-items: center; }
-.ring-icon svg { width: 32%; height: auto; animation: icon-in 0.55s var(--ease) both; filter: drop-shadow(0 0 14px oklch(0.77 0.14 28 / 0.35)); }
+.ring-icon svg { width: 32%; height: auto; animation: icon-in 0.55s var(--ease) both; filter: drop-shadow(0 0 14px oklch(0.81 0.13 32 / 0.4)); }
 @keyframes icon-in { from { opacity: 0; transform: scale(0.82) rotate(-8deg); } }
 .calc-text { margin-top: auto; padding-top: 32px; }
 .calc-step { font-size: 13px; color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -338,21 +407,35 @@ p { text-wrap: pretty; }
 }
 </style>
 </head>
-<body>
+<body data-screen="intro">
+<div class="scene" aria-hidden="true">
+  <canvas id="city"></canvas>
+  <svg class="faller" viewBox="0 0 60 124" fill="none" stroke="#1a0a1f" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="30" cy="12" r="8.5" fill="#1a0a1f" stroke="none"/>
+    <path d="M30 22c1 14 0 26 2 40" stroke-width="13"/>
+    <path d="M26 27c-6 8-9 16-11 24-1 6-3 11-5 15" stroke-width="5.5"/>
+    <path d="M35 27c5 7 7 14 9 22 1 5 3 9 6 12" stroke-width="5.5"/>
+    <path d="M29 62c-2 10-5 19-4 28 0 8 2 17 1 26" stroke-width="7.5"/>
+    <path d="M35 62c3 9 6 17 6 25-1 8-4 15-4 24" stroke-width="7.5"/>
+  </svg>
+  <div class="scrim scrim-intro"></div>
+  <div class="scrim scrim-dim"></div>
+</div>
 <canvas class="lines-canvas" id="bg" aria-hidden="true"></canvas>
+<div class="flash" aria-hidden="true"></div>
 
 <main>
   <!-- 封面 -->
   <section class="screen" id="intro">
     <div class="wrap">
-      <p class="intro-top">平行宇宙档案馆 · <b>No.</b> 你的编号待生成</p>
+      <p class="intro-top"><i class="sig"></i>多元宇宙档案馆 · 坐标未锁定</p>
       <div class="intro-body">
-        <h1 class="intro-title"><span class="num">1000万</span>种人生里<br>你走的是哪一条线</h1>
-        <p class="intro-sub">四个章节、50 个问题，从你的恋爱方式、看世界的角度、做决定的习惯和真实经历里，推演出属于你的那一条时间线。</p>
+        <h1 class="intro-title"><span class="num">1000万</span>个宇宙里<br>总有一个你<br>正在过<em>另一种人生</em></h1>
+        <p class="intro-sub">回答 50 个问题，世界会在你面前翻转。<br>去看看另一个宇宙里的你，过得怎么样。</p>
         <ul class="intro-list">
-          <li>恋爱人格</li><li>16型人格</li><li>深度画像</li><li>最适合你的人</li><li>你的爱情线</li><li>适合的工作</li><li>三条平行人生</li>
+          <li>恋爱人格</li><li>16型人格</li><li>爱情线</li><li>平行人生</li>
         </ul>
-        <button class="cta" id="start">进入我的宇宙</button>
+        <button class="cta" id="start">跳进平行宇宙</button>
         <p class="fine">约 6 分钟 · 凭第一直觉选 · 答案只保存在你的手机里</p>
       </div>
     </div>
@@ -701,6 +784,7 @@ const lines = (() => {
   function frame(now) {
     const t = reduce ? 0 : (now - t0) / 1000;
     ctx.clearRect(0, 0, w, h);
+    if (mode === 'calm') return;
     let spread = 1, heroA = 0.9, fast = 1;
     if (mode === 'calc') {
       const p = Math.min(1, (now - modeAt) / 3000);
@@ -732,12 +816,119 @@ const lines = (() => {
   return { set(m) { mode = m; modeAt = performance.now(); start(); } };
 })();
 
+/* ============ 颠倒的城市（原创绘制，不用任何外部图片） ============ */
+const city = (() => {
+  const cv = $('#city');
+  const ctx = cv.getContext('2d');
+
+  function sky(w, h) {
+    const g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, '#1d0b24');
+    g.addColorStop(0.3, '#4a1840');
+    g.addColorStop(0.38, '#f06478');
+    g.addColorStop(0.6, '#ec6a8a');
+    g.addColorStop(0.8, '#c357b0');
+    g.addColorStop(1, '#7448c9');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+    const glow = (x, y, r, c) => {
+      const rg = ctx.createRadialGradient(x, y, 0, x, y, r);
+      rg.addColorStop(0, c); rg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = rg; ctx.fillRect(0, 0, w, h);
+    };
+    glow(w * 0.25, h * 0.4, w * 0.9, 'rgba(255,150,110,0.45)');
+    glow(w * 0.95, h * 0.95, w * 0.9, 'rgba(110,70,220,0.55)');
+  }
+
+  function clouds(w, h, rnd) {
+    for (let i = 0; i < 22; i++) {
+      const x = rnd() * w, y = h * (0.52 + rnd() * 0.45), r = w * (0.15 + rnd() * 0.3);
+      ctx.save();
+      ctx.translate(x, y); ctx.scale(1, 0.28);
+      const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
+      const a = 0.05 + rnd() * 0.12;
+      rg.addColorStop(0, `rgba(255,${200 + Math.floor(rnd() * 40)},230,${a})`);
+      rg.addColorStop(1, 'rgba(255,220,240,0)');
+      ctx.fillStyle = rg;
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // 一层楼：从屏幕顶部往下“挂”，楼顶朝下
+  function layer(w, h, rnd, o) {
+    let x = -rnd() * 30;
+    while (x < w) {
+      const bw = o.minW + rnd() * (o.maxW - o.minW);
+      const edge = Math.abs(x + bw / 2 - w / 2) / (w / 2); // 0 中间 → 1 边缘
+      const depth = h * (o.minD + rnd() * (o.maxD - o.minD) + edge * o.edgeBoost);
+      const g = ctx.createLinearGradient(0, 0, 0, depth);
+      g.addColorStop(0, o.top); g.addColorStop(1, o.end);
+      ctx.fillStyle = g;
+      ctx.fillRect(x, 0, bw, depth);
+      // 楼顶：退台 + 天线 / 尖塔
+      const r = rnd();
+      if (r < 0.35) {
+        const iw = bw * (0.45 + rnd() * 0.3), ih = 6 + rnd() * 18;
+        ctx.fillStyle = o.end;
+        ctx.fillRect(x + (bw - iw) / 2, depth - 1, iw, ih);
+        if (rnd() < 0.5) ctx.fillRect(x + bw / 2 - 1, depth + ih - 1, 2, 10 + rnd() * 30);
+      } else if (r < 0.42 && o.spire) {
+        ctx.fillStyle = o.end;
+        ctx.beginPath();
+        ctx.moveTo(x + bw * 0.2, depth - 1); ctx.lineTo(x + bw * 0.8, depth - 1);
+        ctx.lineTo(x + bw * 0.5, depth + bw * 1.6); ctx.closePath(); ctx.fill();
+        ctx.fillRect(x + bw / 2 - 1, depth + bw * 1.5, 2, 26);
+      }
+      // 楼顶边缘被天光照亮
+      ctx.fillStyle = o.rim;
+      ctx.fillRect(x, depth - 2, bw, 2);
+      // 窗户
+      const cw = o.win, gap = o.win * 2 + 3;
+      for (let wy = 6; wy < depth - 8; wy += gap + 2) {
+        for (let wx = x + 3; wx < x + bw - cw - 2; wx += gap) {
+          if (rnd() < o.lit) {
+            ctx.fillStyle = rnd() < 0.7 ? `rgba(255,205,160,${o.winA})` : `rgba(255,140,190,${o.winA})`;
+            ctx.fillRect(wx, wy, cw, cw + 1);
+          }
+        }
+      }
+      x += bw + (rnd() < 0.3 ? rnd() * 4 : 0);
+    }
+  }
+
+  function draw() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const w = cv.clientWidth, h = cv.clientHeight;
+    cv.width = w * dpr; cv.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const rnd = mulberry32(318);
+    sky(w, h);
+    clouds(w, h, rnd);
+    // 远 → 近：越远越淡、越被天光染粉
+    layer(w, h, rnd, { minW: 10, maxW: 26, minD: 0.24, maxD: 0.34, edgeBoost: 0, top: '#3a1638', end: '#a44a6e', rim: 'rgba(255,170,150,0.5)', win: 1.5, lit: 0.25, winA: 0.4, spire: true });
+    layer(w, h, rnd, { minW: 18, maxW: 40, minD: 0.15, maxD: 0.28, edgeBoost: 0.04, top: '#24102a', end: '#5c2448', rim: 'rgba(255,150,140,0.45)', win: 2, lit: 0.22, winA: 0.5, spire: true });
+    layer(w, h, rnd, { minW: 34, maxW: 70, minD: 0.04, maxD: 0.1, edgeBoost: 0.22, top: '#12060f', end: '#2a0f26', rim: 'rgba(255,130,140,0.35)', win: 2, lit: 0.16, winA: 0.45, spire: false });
+    // 楼与天空交界的雾
+    const haze = ctx.createLinearGradient(0, h * 0.18, 0, h * 0.4);
+    haze.addColorStop(0, 'rgba(240,100,120,0)');
+    haze.addColorStop(1, 'rgba(240,100,120,0.28)');
+    ctx.fillStyle = haze;
+    ctx.fillRect(0, h * 0.18, w, h * 0.22);
+  }
+  let t;
+  addEventListener('resize', () => { clearTimeout(t); t = setTimeout(draw, 150); });
+  draw();
+  return { draw };
+})();
+
 /* ============ 流程 ============ */
 let state = load();
 let step = 0;
 let answers = [];
 
 function show(id) {
+  document.body.dataset.screen = id;
   document.querySelectorAll('.screen').forEach((s) => { s.hidden = s.id !== id; });
   scrollTo(0, 0);
 }
@@ -758,14 +949,14 @@ function renderBreak(k) {
   const from = CHAPTERS[k].end;
   $('#ch-break').innerHTML = `
     <div class="ch-dots">${CHAPTERS.map((_, i) => `<i class="${i <= k ? 'on' : ''}"></i>`).join('')}</div>
-    <p class="ch-done">第${CN[k]}章完成</p>
+    <p class="ch-done">第${CN[k]}重宇宙 · 同步完成</p>
     <h2 class="ch-title" tabindex="-1">${CHAPTERS[k].name}</h2>
     <p class="ch-reward"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>${CHAPTERS[k].reward}</p>
     <div class="ch-next">
-      <span>下一章 · ${next.end - from} 题</span>
-      <b>第${CN[k + 1]}章：${next.name}</b>
+      <span>即将跃迁 · ${next.end - from} 题</span>
+      <b>第${CN[k + 1]}重宇宙：${next.name}</b>
     </div>
-    <button class="cta" id="ch-go">继续</button>`;
+    <button class="cta" id="ch-go">跃迁到下一重宇宙</button>`;
   $('#q-zone').hidden = true;
   $('#ch-break').hidden = false;
   $('#p-fill').style.width = `${(step / TOTAL) * 100}%`;
@@ -781,7 +972,7 @@ function renderQ() {
   $('#q-zone').hidden = false;
   $('#ch-break').hidden = true;
   $('#p-count').textContent = `${pad(step + 1)} / ${TOTAL}`;
-  $('#p-label').textContent = `第${CN[ci]}章 · ${CHAPTERS[ci].name}`;
+  $('#p-label').textContent = `第${CN[ci]}重宇宙 · ${CHAPTERS[ci].name}`;
   $('#p-fill').style.width = `${(step / TOTAL) * 100}%`;
   $('#q-tag').textContent = isFact ? '最后 3 个现实问题，让推演更准' : `${step - start + 1} / ${CHAPTERS[ci].end - start}`;
   $('#q-text').textContent = q.t;
@@ -823,8 +1014,14 @@ function pick(i, btn) {
 
 $('#start').addEventListener('click', () => {
   step = 0; answers = []; brk = null;
-  show('quiz');
-  renderQ();
+  const go = () => { show('quiz'); renderQ(); };
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return go();
+  // 进入宇宙：震动 → 文字黑白闪 → 白闪 → 黑场 → 开始答题
+  if (document.body.classList.contains('warping')) return;
+  document.body.classList.add('warping');
+  try { navigator.vibrate && navigator.vibrate([30, 50, 40, 40, 60, 30, 120]); } catch {}
+  setTimeout(go, 1180);
+  setTimeout(() => document.body.classList.remove('warping'), 1650);
 });
 $('#back').addEventListener('click', () => {
   if (brk !== null) { brk = null; step--; renderQ(); return; }
@@ -838,7 +1035,7 @@ function finish() {
   state = { answers: answers.slice(0, TOTAL), unlocked: !!state.unlocked };
   save(state);
   show('calc');
-  lines.set('result');
+  lines.set('calm');
   runRing(universeNo(state.answers));
 }
 
@@ -864,11 +1061,11 @@ function buildRing() {
   const [sx, sy] = ringPoint(RING.start);
   const nodes = STAGES.map((_, i) => {
     const [x, y] = ringPoint(RING.start + (i + 1) * RING.step);
-    return `<g class="node" data-i="${i + 1}"><circle cx="${x}" cy="${y}" r="11" fill="oklch(0.3 0.045 238)" stroke="transparent" stroke-width="1.5"/><text x="${x}" y="${y + 3.6}" text-anchor="middle">${i + 1}</text></g>`;
+    return `<g class="node" data-i="${i + 1}"><circle cx="${x}" cy="${y}" r="11" fill="oklch(0.32 0.06 318)" stroke="transparent" stroke-width="1.5"/><text x="${x}" y="${y + 3.6}" text-anchor="middle">${i + 1}</text></g>`;
   }).join('');
   $('#ring').innerHTML = `
     <defs><linearGradient id="arcg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--primary)"/><stop offset="1" style="stop-color:var(--accent)"/></linearGradient></defs>
-    <circle cx="150" cy="150" r="${RING.r}" fill="none" stroke="oklch(0.25 0.045 238)" stroke-width="22"/>
+    <circle cx="150" cy="150" r="${RING.r}" fill="none" stroke="oklch(0.27 0.06 318 / 0.85)" stroke-width="22"/>
     <circle class="arc" id="arc" cx="150" cy="150" r="${RING.r}" fill="none" stroke="url(#arcg)" stroke-width="22" stroke-linecap="round"
       pathLength="360" stroke-dasharray="0 360" transform="rotate(${RING.start} 150 150)"/>
     <circle cx="${sx}" cy="${sy}" r="4" fill="var(--ink)"/>
@@ -1134,7 +1331,7 @@ function renderResult() {
     <p class="disclaimer">本测试基于依恋理论与人格特质模型改编，结果仅供娱乐，<br>不构成心理诊断或任何人生建议。我们不收集你的任何个人信息。</p>`;
 
   show('result');
-  lines.set('result');
+  lines.set('calm');
 
   $('#again').addEventListener('click', () => {
     state = { unlocked: state.unlocked };
@@ -1160,7 +1357,7 @@ function renderResult() {
 
 /* 之前测过：直接回到结果（从小红书买完码回来时用） */
 if (state.answers && state.answers.length === TOTAL) {
-  lines.set('result');
+  lines.set('calm');
   renderResult();
 }
 </script>
