@@ -251,6 +251,13 @@ body:not([data-screen="quiz"]) .pager { display: none; }
 @keyframes from-right { from { opacity: 0; transform: translateX(36px); } }
 @keyframes from-left { from { opacity: 0; transform: translateX(-36px); } }
 
+/* ---------- 跃迁翻面：整屏（含背景）绕竖轴翻过去，再从背面翻回来 ---------- */
+body.flip-out, body.flip-in { overflow: hidden; }
+body.flip-out .scene, body.flip-out #quiz .wrap { animation: flip-out 0.4s cubic-bezier(0.55, 0, 0.8, 0.25) forwards; transform-origin: 50% 50%; }
+body.flip-in .scene, body.flip-in #quiz .wrap { animation: flip-in 0.55s var(--ease) both; transform-origin: 50% 50%; }
+@keyframes flip-out { to { transform: perspective(1100px) rotateY(90deg) scale(0.9); filter: brightness(1.8); } }
+@keyframes flip-in { from { transform: perspective(1100px) rotateY(-90deg) scale(0.9); filter: brightness(1.8); } }
+
 /* ---------- 章节过场 ---------- */
 .ch-break { margin-top: 56px; animation: rise 0.5s var(--ease) both; }
 .ch-dots { display: flex; gap: 6px; }
@@ -449,7 +456,7 @@ body:not([data-screen="quiz"]) .pager { display: none; }
   <!-- 封面 -->
   <section class="screen" id="intro">
     <div class="wrap">
-      <p class="intro-top"><i class="sig"></i>多元宇宙档案馆 · 坐标未锁定</p>
+      <p class="intro-top" id="brand" hidden><i class="sig"></i><span></span></p>
       <div class="intro-body">
         <h1 class="intro-title"><span class="num">1000万</span>个宇宙里<br>总有一个你<br>正在过<em>另一种人生</em></h1>
         <p class="intro-sub">回答 50 个问题，世界会在你面前翻转。<br>去看看另一个宇宙里的你，过得怎么样。</p>
@@ -513,7 +520,7 @@ body:not([data-screen="quiz"]) .pager { display: none; }
 </main>
 <nav class="pager" id="pager" aria-label="翻页">
   <button class="pg-btn" id="pg-prev" aria-label="上一题"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
-  <span class="pg-hint" id="pg-hint">左右滑动翻页 · 答过的题随时能改</span>
+  <span class="pg-hint" id="pg-hint"></span>
   <button class="pg-jump" id="pg-jump" hidden></button>
   <button class="pg-btn" id="pg-next" aria-label="下一题"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
 </nav>
@@ -522,6 +529,7 @@ body:not([data-screen="quiz"]) .pager { display: none; }
 <script>
 /* ============ 配置 ============ */
 const STORE_NAME = '平行宇宙档案馆'; // 小红书店铺名，开店后改成真实的
+const BRAND = ''; // 小红书账号名，填了才会显示在封面左上角，比如 '@你的账号名'
 const STORE_KEY = 'plt_v2';
 
 /* ============ 题库 ============
@@ -952,6 +960,9 @@ const vortex = (() => {
   return { run };
 })();
 
+/* 封面左上角的账号名 */
+if (BRAND) { $('#brand span').textContent = BRAND; $('#brand').hidden = false; }
+
 /* ============ 流程 ============ */
 let state = load();
 let step = 0;
@@ -1069,8 +1080,23 @@ function pick(i, btn) {
   setTimeout(() => { busy = false; goNext(); }, 260);
 }
 
+let flipping = false;
+function flipTo(fn) {
+  if (flipping) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return fn();
+  flipping = true;
+  document.body.classList.add('flip-out');
+  setTimeout(() => {
+    fn();
+    document.body.classList.remove('flip-out');
+    document.body.classList.add('flip-in');
+    setTimeout(() => { document.body.classList.remove('flip-in'); flipping = false; }, 560);
+  }, 400);
+}
+
 function goNext() {
-  if (brk !== null) { brk = null; renderQ('next'); return; }
+  if (flipping) return;
+  if (brk !== null) { flipTo(() => { brk = null; renderQ(); }); return; }
   if (answers[step] === undefined) return;
   step++;
   if (step === LONGEST && skipLongest()) step++;
@@ -1083,6 +1109,7 @@ function goNext() {
 }
 
 function goPrev() {
+  if (flipping) return;
   if (brk !== null) { brk = null; step--; renderQ('prev'); return; }
   if (step === 0) return;
   step--;
