@@ -1715,10 +1715,6 @@ function renderResult() {
   const q = params.toString();
   history.replaceState(null, '', location.pathname + (q ? '?' + q : '') + location.hash);
 })();
-if (state.unlocked && !(state.answers && state.answers.length === TOTAL)) {
-  $('#intro .fine').textContent = '完整报告已解锁 · 答完 50 题就能看到全部内容';
-}
-
 /* 之前测过：直接回到结果（从小红书买完码回来时用） */
 if (state.answers && state.answers.length === TOTAL) {
   lines.set('calm');
